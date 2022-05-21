@@ -3,11 +3,20 @@
   
 import numpy as np
 import cv2
-  
+from CountsPerSec import CountsPerSec 
   
 # Capturing video through webcam
 webcam = cv2.VideoCapture(0)
 cps = CountsPerSec().start()
+
+def putIterationsPerSec(frame, iterations_per_sec):
+    """
+    Add iterations per second text to lower-left corner of a frame.
+    """
+
+    cv2.putText(frame, "{:.0f} iterations/sec".format(iterations_per_sec),
+        (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,0,0))
+    return frame
 
 # Start a while loop
 while(1):
@@ -83,12 +92,3 @@ while(1):
         cap.release()
         cv2.destroyAllWindows()
         break
-
-def putIterationsPerSec(frame, iterations_per_sec):
-    """
-    Add iterations per second text to lower-left corner of a frame.
-    """
-
-    cv2.putText(frame, "{:.0f} iterations/sec".format(iterations_per_sec),
-        (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
-    return frame

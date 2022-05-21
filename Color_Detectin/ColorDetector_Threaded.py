@@ -98,13 +98,13 @@ def detectFlag(source=0):
 
  ##################### Show image Mutation ######################################   
     video_shower.frame = imageFrame
-    video_shower.frame = green_mask
+    cv2.imshow(green_mask)
     cps.increment()
 
 
 
 def main():
-    detectFlag()
+    detectFlag(source=0)
 
 if __name__ == "__main__":
     main()
