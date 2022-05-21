@@ -258,7 +258,7 @@ float Motor::pid_velocity_setpoint(){
 
     output = _kP_vel*_error + _kI_vel*_cumulativeError + _kD_vel*_rateError;
     
-    if(output > 255.0) output = 255.0;
+    if(output > 255.0) output = 128.0;
 
     drive_motor((int)output); 
 

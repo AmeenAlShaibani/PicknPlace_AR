@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 baudRate = 115200
-port = "/dev/ttyACM0"
+port = "/dev/ttyACM0_teensy"
 
 import sys
 sys.path.append("../src/open_motor/")
@@ -17,17 +17,9 @@ comms.init_serial_port(port,baudRate,0.5)
 def main():
     while True:
         
-        comms.send_pos_goal(0,0,0,0)
+      #  comms.send_pos_goal(0,0,0,0)
         print("Response:" + comms.get_response())
-        time.sleep(1.5)
 
-        comms.send_pos_goal(-100,-100,-100,-100)
-        print("Response:" + comms.get_response())
-        time.sleep(1.5)
-
-        comms.send_pos_goal(0,0,0,0)
-        print("Response:" + comms.get_response())
-        time.sleep(1.5)
 
 
 if __name__ == "__main__":

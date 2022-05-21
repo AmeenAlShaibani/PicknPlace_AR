@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 baudRate = 115200
-port = "/dev/ttyACM0"
+port = "/dev/ttyACM0_teensy"
 
 import sys
 sys.path.append("../src/open_motor/")

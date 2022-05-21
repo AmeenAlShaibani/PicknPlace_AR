@@ -5,16 +5,6 @@
  * 
  *  ROS Enabled Motor Controller for Teensy4.0 Motor Controller Board
  * 
-
- REQUIREMENTS
- - Use FreeRTOS
- - Schedule Task for each of following functions
-    - Position Measurement
-    - Velocity Calculation
-    - Acceleration Calculation
-    - Current Measurement and Calculation 
-    - Recieve Custom ROS Message to 
-
 **/
 
 
@@ -23,9 +13,9 @@
 
 #define SERIAL_COM
 
-#define GEAR_RATIO 20
+#define GEAR_RATIO 50.9
 #define COUNT_PER_ROT_ENC 12
-#define COUNT_PER_ROT GEAR_RATIO*COUNT_PER_ROT_ENC
+#define COUNT_PER_ROT 1425.1
 
 #define BAUD 115200
 #define TIMEOUT 0.5
@@ -69,20 +59,20 @@ void setup() {
           // _motors[i]->set_Ticks_Per_Rotation(COUNT_PER_ROT);
   }
 
-  mot0.setPID_vars_pos(1.0,0.0,0.0);
+  mot0.setPID_vars_pos(2.5,0,0);
   mot0.setPID_vars_vel(0.5,0.0,0.0);
   mot0.set_Ticks_Per_Rotation(COUNT_PER_ROT);
 
-  mot1.setPID_vars_pos(1.0,0.0,0.0);
+  mot1.setPID_vars_pos(2.35,0,0);
   mot1.setPID_vars_vel(0.5,0.0,0.0);
   mot1.set_Ticks_Per_Rotation(COUNT_PER_ROT);
 
-  mot2.setPID_vars_pos(1.0,0.0,0.0);
+  mot2.setPID_vars_pos(2.56,0.0,0.0);
   mot2.setPID_vars_vel(0.5,0.0,0.0);
   mot2.set_Ticks_Per_Rotation(COUNT_PER_ROT);
 
-  mot3.setPID_vars_pos(1.0,0.0,0.0);
-  mot3.setPID_vars_vel(0.5,0.0,0.0);
+  mot3.setPID_vars_pos(2.67,0,0);
+  mot3.setPID_vars_vel(0.6,0.0,0.0);
   mot3.set_Ticks_Per_Rotation(COUNT_PER_ROT);
 
 }
