@@ -7,6 +7,8 @@ import cv2
   
 # Capturing video through webcam
 webcam = cv2.VideoCapture(0)
+cps = CountsPerSec().start()
+
 # Start a while loop
 while(1):
       
@@ -71,12 +73,22 @@ while(1):
                     1.0, (255,255,255))
             
         
-              
+        imageFrame = putIterationsPerSec(imageFrame, cps.countsPerSec())      
     # Program Termination
     cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
     cv2.imshow("Mask", green_mask)
+    cps.increment()
 
     if cv2.waitKey(10) & 0xFF == ord('q'):
         cap.release()
         cv2.destroyAllWindows()
         break
+
+def putIterationsPerSec(frame, iterations_per_sec):
+    """
+    Add iterations per second text to lower-left corner of a frame.
+    """
+
+    cv2.putText(frame, "{:.0f} iterations/sec".format(iterations_per_sec),
+        (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
+    return frame
