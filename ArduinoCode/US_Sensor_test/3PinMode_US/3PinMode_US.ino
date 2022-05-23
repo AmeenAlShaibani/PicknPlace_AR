@@ -14,8 +14,6 @@
 #include "NewPing.h"
 
 // Define Constants
-
-
 #define US1  3  // Trigger and Echo both on pin 10
 #define US2  4
 #define US3  12
@@ -43,7 +41,6 @@ float distance3; // Stores calculated distance in cm
 float duration4; // Stores HC-SR04 pulse duration value
 float distance4; // Stores calculated distance in cm
 
-float soundsp;  // Stores calculated speed of sound in M/S
 float soundcm;  // Stores calculated speed of sound in cm/ms
 int iterations = 5;
 
@@ -54,22 +51,16 @@ void setup() {
 
 void loop()
 {
-
-  delay(2000);  // Delay so DHT-22 sensor can stabalize
     
-    // Calculate the Speed of Sound in M/S
-    soundsp = 331.4 ;
+  //Sound speed in cm
     
-    // Convert to cm/ms
-    
-    soundcm = soundsp / 10000;
+  soundcm =  331.4 / 10000;
     
   duration1 = sonar1.ping_median(iterations);
   duration2 = sonar2.ping_median(iterations);
   duration3 = sonar3.ping_median(iterations);
   duration4 = sonar4.ping_median(iterations);
 
-  
   // Calculate the distance
   distance1 = (duration1 / 2) * soundcm;
   distance2 = (duration2 / 2) * soundcm;

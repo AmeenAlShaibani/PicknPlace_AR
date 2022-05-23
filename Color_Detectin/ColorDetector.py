@@ -4,7 +4,18 @@
 import numpy as np
 import cv2
 from CountsPerSec import CountsPerSec 
-  
+
+##To read only an image for cv2 
+#camera = PiCamera()
+#camera.vflip = True
+#time.sleep(2)
+#img = cv2.imread('/home/pi/Pictures/PresImage.jpg')
+#cv2.imshow("image", img)
+#cv2.waitKey(0)
+
+
+#TODO: look into if changing the contrast on the image can help see colors better
+
 # Capturing video through webcam
 webcam = cv2.VideoCapture(0)
 cps = CountsPerSec().start()
@@ -89,6 +100,6 @@ while(1):
     cps.increment()
 
     if cv2.waitKey(10) & 0xFF == ord('q'):
-        cap.release()
+        webcam.release()
         cv2.destroyAllWindows()
         break

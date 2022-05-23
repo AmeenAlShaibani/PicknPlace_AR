@@ -1,5 +1,6 @@
 from threading import Thread
 import cv2
+import time
 
 class VideoGet:
     """
@@ -21,6 +22,7 @@ class VideoGet:
             if not self.grabbed:
                 self.stop()
             else:
+                time.sleep(0.02)
                 (self.grabbed, self.frame) = self.stream.read()
 
     def stop(self):
