@@ -331,8 +331,6 @@ def RCMODE():
             #If key is lifted stop motors
         elif event.type == pygame.KEYUP:
             RobotMotion.stopRobot()
-
-#def CONMODE():
     
 def main():
     global mode
