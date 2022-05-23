@@ -13,19 +13,8 @@ from threading import Thread, Event
 import numpy as np
 import cv2
 
-baudRate = 115200
-
 #import keyboard
 sys.path.append("../src/open_motor/")
-
-# This line points the python path to the open_motor module.
-# This will need to be changed based on the location of your code.
-
-#comms = open_motor()
-#comms.init_serial_port(port,baudRate,0.5)
-
-#Initialize Robot Mode
-mode = "RC"
 
 #Initialize pygame keyboard
 kp.init()
@@ -131,17 +120,17 @@ def centerWithFlag(Fx):
             err = abs(Fx-320)/320
             #pass error to the time sleep function to sleep more or less 
 
-            #TODO: sleeping for 1 second rotates around 40 degrees this needs to be tuned
+            #TODO: sleeping for 0.625 second rotates around 25 degrees this needs to be tuned
             if(Fx > 320):
                 #crab right or turn CW
                 RobotMotion.CW()
-                time.sleep(1*err)
+                time.sleep(0.625*err)
                 RobotMotion.stopRobot()
             
             elif(Fx < 320):
                 #crab left or turn CCW
                 RobotMotion.CCW()
-                time.sleep(1*err)
+                time.sleep(0.625*err)
                 RobotMotion.stopRobot()
 
             #adjust robot and return that you are not centered, and check if 
@@ -149,8 +138,8 @@ def centerWithFlag(Fx):
             return False
 
     else:
-        #if no flag found, then rotate 40 degrees and repeat main 
-        RobotMotion.rotateDegrees(40)
+        #if no flag found, then rotate 20 degrees and repeat main 
+        RobotMotion.rotateDegrees(20)
         return False
 
 
