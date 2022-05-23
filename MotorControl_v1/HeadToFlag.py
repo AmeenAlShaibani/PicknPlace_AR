@@ -37,40 +37,6 @@ green_lower = np.array([45, 55, 0], np.uint8)
 green_upper = np.array([120, 150, 70], np.uint8)
 kernal = np.ones((5, 5), "uint8")
 
-
-#Motor Control function
-def MotorRun(Mot0, Mot1, Mot2, Mot3):
-    topright = Mot1*speed
-    topleft = Mot2*speed
-    bottomright = Mot0*speed
-    bottomleft = Mot3*speed
-
-    #Adjusting motor direction
-    bottomright = -bottomright
-    topleft = -topleft
-    bottomleft = -bottomleft
-    
-    #Send the signals to 
-    comms.send_pwm_goal(bottomright,topright,topleft,bottomleft)
-
-#Rotate in place by indicating degrees and direction.
-#  direction >= 0 ------> CW
-#  direction < 0  ------> CCW
-def rotateDegrees(degrees, direction=0):
-    FullRotationTime = 9
-    turningTime = degrees * FullRotationTime/360
-   
-    if(direction >= 0):
-     #Turn clockwise
-        RobotMotion.CW()
-        
-    else:
-        #turn CCW
-        RobotMotion.CCW()
-
-    time.sleep(turningTime)
-    RobotMotion.stopRobot()
-
 #Function to see if position is within a tolerance wrt to goal 
 def WithinTolerance(tol, posX, posY,  goalX, goalY):
     if(posX > goalX - tol and posX < goalX + tol and posY > goalY - tol and posY < goalY + tol):
@@ -184,7 +150,7 @@ def centerWithFlag(Fx):
 
     else:
         #if no flag found, then rotate 40 degrees and repeat main 
-        rotateDegrees()
+        RobotMotion.rotateDegrees(40)
         return False
 
 
