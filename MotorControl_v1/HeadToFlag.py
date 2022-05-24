@@ -109,29 +109,29 @@ def getFlagCenter():
     return cx,cy
 
 def centerWithFlag(Fx):
-    if (Fx != None):
-        if (WithinTolerance(30,Fx,Fx,320,320)):
+
+    kP = .625
+    screen_center_x = 320 #center pixel of screen
+
+    if (Fx != None): #if flag detected
+        if (WithinTolerance(30,Fx,Fx,320,320)): #if flag centered
             RobotMotion.stopRobot()
             return True
-        else:
+        else: #else flag not centered
             #implement a P loop
-            
+    
             # Normalize error 
-            err = abs(Fx-320)/320
+            err = abs(Fx-320) #/320
             #pass error to the time sleep function to sleep more or less 
 
             #TODO: sleeping for 0.625 second rotates around 25 degrees this needs to be tuned
-            if(Fx > 320):
+            if(Fx > screen_center_x):
                 #crab right or turn CW
-                RobotMotion.CW()
-                time.sleep(0.625*err)
-                RobotMotion.stopRobot()
+                RobotMotion.CW(kP*err)
             
-            elif(Fx < 320):
+            elif(Fx < screen_center_x):
                 #crab left or turn CCW
-                RobotMotion.CCW()
-                time.sleep(0.625*err)
-                RobotMotion.stopRobot()
+                RobotMotion.CCW(kP*err)
 
             #adjust robot and return that you are not centered, and check if 
             # you are centered in the next loop
