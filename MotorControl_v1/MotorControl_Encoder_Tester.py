@@ -321,7 +321,7 @@ def main():
         print("I am in Confirmation Mode :)")
         
         fullRot = 1465*6
-        ROT = 1425.1
+        ROT = 1425.1 #ticks per rotation
         
         forward5ft = 1425.1*5
         sideways3ft = 1425.1 * 3
