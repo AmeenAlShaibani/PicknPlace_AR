@@ -27,53 +27,31 @@ ser.reset_input_buffer()
 #import keyboard
 sys.path.append("../src/open_motor/")
 
-
+#Initialize Robot Motion class which controls robots
 RobotMotion = RobotMotion()
-
-# This line points the python path to the open_motor module.
-# This will need to be changed based on the location of your code.
-
-###############################################3
-#comms = open_motor()
-#comms.init_serial_port(port,baudRate,0.5)
-################################################
 
 #Initialize Robot Mode
 mode = "RC"
 
+#Robot States
+######################
+FindingFlag = False
+GettingFlag = False
+
+path1 = False
+path2 = False
+path3 = False
+path4 = False 
+
+blocked = False
+Driving = False
+######################
+
 #Initialize pygame keyboard
 kp.init()
 
-#initialize motor pwm vars
-
-#############################################
-#topright = 0
-#topleft = 0
-#bottomright = 0
-#bottomleft = 0
-#speed = 300
-#########################################
-
 #Create even for when US sensor reads something
 US_event = Event()
-
-############################################################################
-#Motor Control function
-#def MotorRun(Mot0, Mot1, Mot2, Mot3):
-#    topright = Mot1*speed
-#    topleft = Mot2*speed
-#    bottomright = Mot0*speed
-#    bottomleft = Mot3*speed
-
-    #Adjusting motor direction
-#    bottomright = -bottomright
-#    topleft = -topleft
-#    bottomleft = -bottomleft
-    
-    #Send the signals to 
-#    comms.send_pwm_goal(bottomright,topright,topleft,bottomleft)
-##################################################################################3
-
 
 # Function thread to get Ultrasonic data from Arduino 
 def get_USDATA(outQueue):
