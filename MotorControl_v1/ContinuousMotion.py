@@ -68,6 +68,18 @@ def main():
             #Stop
             elif kp.getKey('s'):
                 RobotMotion.stopRobot()
+            
+            #Stop
+            elif kp.getKey('t'):
+                RobotMotion.forward()
+                i = 10000
+                while i >0:
+                    i = i-1
+                RobotMotion.right()
+
+            #If key is lifted stop motors
+        #elif event.type == pygame.KEYUP:
+         #   RobotMotion.stopRobot()
 
 if __name__ == "__main__":
     while True:
