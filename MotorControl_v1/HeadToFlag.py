@@ -13,17 +13,11 @@ from threading import Thread, Event
 import numpy as np
 import cv2
 
-#import keyboard
-sys.path.append("../src/open_motor/")
-
-#Initialize pygame keyboard
-kp.init()
-
 RobotMotion = RobotMotion()
 
 #Make green limits a global variable 
-green_lower = np.array([45, 55, 0], np.uint8)
-green_upper = np.array([120, 150, 70], np.uint8)
+green_lower = np.array([50, 112, 28], np.uint8)
+green_upper = np.array([100,230,64], np.uint8)
 kernal = np.ones((5, 5), "uint8")
 
 #Function to see if position is within a tolerance wrt to goal 
@@ -33,13 +27,11 @@ def WithinTolerance(tol, posX, posY,  goalX, goalY):
     else:   return False
 
 ##To read only an image for cv2 
-def captureImage():
-    img = cv2.imread('/home/pi/Pictures/PresImage.jpg')
-    cv2.imshow("image", img)
-    cv2.waitKey(0)
+def captureImage(camera):
+    _ , img = camera.read()
     return img
 
-def getFlagCenter():
+def getFlagCenter(imageFrame):
     global green_lower
     global green_upper
     global kernal
@@ -98,15 +90,10 @@ def getFlagCenter():
         cy = int(M["m01"]/M["m00"])
         
         cv2.circle(imageFrame,(cx,cy),7,(255,255,255),-1)           
-        cv2.putText(imageFrame, "Green Colour", (cx-20,cy-20),
-                    cv2.FONT_HERSHEY_SIMPLEX, 
-                    1.0, (255,255,255))
-               
-    # Program Termination
-    cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
-    cv2.imshow("Mask", green_mask)
+        
+    
 
-    return cx,cy
+    return cx,cy, imageFrame, green_mask
 
 def centerWithFlag(Fx):
 
@@ -139,23 +126,26 @@ def centerWithFlag(Fx):
 
     else:
         #if no flag found, then rotate 20 degrees and repeat main 
-        RobotMotion.rotateDegrees(20)
+        #RobotMotion.rotateDegrees(20)
         return False
 
-
 def main():
-    #capture image 
-    imageFrame = captureImage()
-    Fx,Fy = getFlagCenter()
     centered = False
-    #keep going in a loop until you are centered with flag
     while (not centered):
+        #capture image 
+        imageFrame = captureImage(camera)
+        Fx,Fy, imageFrame, green_mask = getFlagCenter(imageFrame)     
+        #cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
+        #cv2.imshow("Mask", green_mask)
+        #keep going in a loop until you are centered with flag
         centered = centerWithFlag(Fx)
+        
+        
     
 if __name__ == "__main__":
+    
     #Create a camera object and initialize it
-    camera = PiCamera()
+    camera = cv2.VideoCapture(0)
     #TODO: you can remove camera flip, only there for debugging
-    camera.vflip = True
     time.sleep(2)
     main()

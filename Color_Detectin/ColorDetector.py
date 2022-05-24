@@ -1,6 +1,4 @@
 # Python code for Multiple Color Detection
-  
-  
 import numpy as np
 import cv2
 from CountsPerSec import CountsPerSec 
@@ -48,8 +46,8 @@ while(1):
 
     # Set range for green color and 
     # define mask
-    green_lower = np.array([45, 55, 0], np.uint8)
-    green_upper = np.array([120, 150, 70], np.uint8)
+    green_lower = np.array([50, 112, 28], np.uint8)
+    green_upper = np.array([100,230,64], np.uint8)
     green_mask = cv2.inRange(hsvFrame, green_lower, green_upper)
 
     # Morphological Transform, Dilation
@@ -60,8 +58,11 @@ while(1):
       
     # Apply a dilate filter to consolidate green pixels together
     green_mask - cv2.erode(green_mask, kernal, iterations =2)
-    green_mask = cv2.dilate(green_mask, kernal, iterations = 4)
-  
+    green_mask = cv2.dilate(green_mask, kernal, iterations = 3)
+
+    #green_mask = cv2.morphologyEx(green_mask, cv2.MORPH_CLOSE, kernal)
+    #green_mask = cv2.morphologyEx(green_mask, cv2.MORPH_OPEN, kernal)
+
     #Perform filter operation by anding frame using green_mask
     res_green = cv2.bitwise_and(imageFrame, imageFrame,
                                 mask = green_mask)
@@ -87,14 +88,12 @@ while(1):
         cx = int(M["m10"]/M["m00"])
         cy = int(M["m01"]/M["m00"])
         
-        cv2.circle(imageFrame,(cx,cy),7,(255,255,255),-1)           
-        cv2.putText(imageFrame, "Green Colour", (cx-20,cy-20),
-                    cv2.FONT_HERSHEY_SIMPLEX, 
-                    1.0, (255,255,255))
-            
+        cv2.circle(imageFrame,(cx,cy),7,(255,255,255),-1)
+        cv2.line(imageFrame,(300,0),(300,480),(255,255,255),3)           
+        cv2.line(imageFrame,(340,0),(340,480),(255,255,255),3)                 
         
         imageFrame = putIterationsPerSec(imageFrame, cps.countsPerSec())      
-    # Program Termination
+    # Program TermQination
     cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
     cv2.imshow("Mask", green_mask)
     cps.increment()
