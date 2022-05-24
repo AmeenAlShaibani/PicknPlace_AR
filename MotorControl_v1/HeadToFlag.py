@@ -28,7 +28,7 @@ def WithinTolerance(tol, posX, posY,  goalX, goalY):
 
 ##To read only an image for cv2 
 def captureImage(camera):
-    _ , img = camera.read()
+    _, img = camera.read()
     return img
 
 def getFlagCenter(imageFrame):
@@ -97,7 +97,7 @@ def getFlagCenter(imageFrame):
 
 def centerWithFlag(Fx):
 
-    kP = .625
+    kP = .425 #0.625
     screen_center_x = 320 #center pixel of screen
 
     if (Fx != None): #if flag detected
@@ -110,6 +110,7 @@ def centerWithFlag(Fx):
             # Normalize error 
             err = abs(Fx-320) #/320
             #pass error to the time sleep function to sleep more or less 
+            if(err < 50): kp=2              
 
             #TODO: sleeping for 0.625 second rotates around 25 degrees this needs to be tuned
             if(Fx > screen_center_x):
@@ -126,7 +127,7 @@ def centerWithFlag(Fx):
 
     else:
         #if no flag found, then rotate 20 degrees and repeat main 
-        #RobotMotion.rotateDegrees(20)
+        RobotMotion.CW()
         return False
 
 def main():
@@ -146,6 +147,7 @@ if __name__ == "__main__":
     
     #Create a camera object and initialize it
     camera = cv2.VideoCapture(0)
+    camera.set(cv2.CAP_PROP_BUFFERSIZE, 1)
     #TODO: you can remove camera flip, only there for debugging
     time.sleep(2)
     main()
