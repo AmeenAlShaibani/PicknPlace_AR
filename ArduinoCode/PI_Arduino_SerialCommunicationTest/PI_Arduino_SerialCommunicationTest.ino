@@ -3,7 +3,7 @@
 //through a serial port, and the goal is to recieve the signal from the pi 
 
 void setup() {
-  Serial.begin(9600); //set baud rate to 9600, you can use 57600 or 115200
+  Serial.begin(57600); //set baud rate to 9600, you can use 57600 or 115200
                      //Baud rate needs to be the same on PI and arduino
 }
 

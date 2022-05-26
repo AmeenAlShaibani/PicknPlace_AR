@@ -13,7 +13,7 @@ const int ledPin =  9;  // the number of the LED pin
 const int ledPin2 =  8; //Number of LED Pin
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(57600);
   
 // initialize the LED pin as an output:
   pinMode(ledPin, OUTPUT);        
