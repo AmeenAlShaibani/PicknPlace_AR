@@ -39,7 +39,7 @@ def getFlagCenter(imageFrame):
     #initialize the center to null 
     cx = None
     cy = None
-
+    avgX = None
     #Blue the camera to reduce the noise
     for i in range(7):
         imageFrame = cv2.GaussianBlur(imageFrame,(5,5),0)
@@ -79,47 +79,54 @@ def getFlagCenter(imageFrame):
     if len(contours) != 0:
         # find the biggest countour (c) by the area
         c = max(contours, key = cv2.contourArea)
-        x,y,w,h = cv2.boundingRect(c)  
-        imageFrame = cv2.rectangle(imageFrame, (x, y), 
-                                   (x + w, y + h),
-                                   (0, 255, 0), 2)
         
-        #Find the center of the box 
+        #Find the center of the box
+        #TODO: YOU CAN REMOVE MOMENTS IF AVG IF EXT TOP AND BOT is GOOD
         M = cv2.moments(c)
+        extTop = tuple(c[c[:, :, 1].argmin()][0])        
+        extBot = tuple(c[c[:, :, 1].argmax()][0])        
+
+        avgX = (extTop[0]+extBot[0])/2
         cx = int(M["m10"]/M["m00"])
         cy = int(M["m01"]/M["m00"])
-        
-        cv2.circle(imageFrame,(cx,cy),7,(255,255,255),-1)           
-        
     
+    return cx,cy,avgX
 
-    return cx,cy, imageFrame, green_mask
-
+withinTol = 0
 def centerWithFlag(Fx):
-
-    kP = .425 #0.625
+    global withinTol
+    kP = .525 #0.625
     screen_center_x = 320 #center pixel of screen
-
     if (Fx != None): #if flag detected
         if (WithinTolerance(30,Fx,Fx,320,320)): #if flag centered
             RobotMotion.stopRobot()
-            return True
+            withinTol = withinTol + 1
+            print("WitinTol:",withinTol)
+            if(withinTol == 6):
+                return True
         else: #else flag not centered
             #implement a P loop
     
             # Normalize error 
-            err = abs(Fx-320) #/320
-            #pass error to the time sleep function to sleep more or less 
-            if(err < 50): kp=2              
-
+            err = float(abs(Fx-320)) #/320
+            print("err: ",err)
+            if(err < 100):
+                kP = 0.8
+            if(err < 60):
+                kP = 1
+            print("kP: ", kP)
+            Rspeed = kP*err
+            if Rspeed > 100:
+                Rspeed = 100
+            print("Speed: ", Rspeed)
             #TODO: sleeping for 0.625 second rotates around 25 degrees this needs to be tuned
             if(Fx > screen_center_x):
                 #crab right or turn CW
-                RobotMotion.CW(kP*err)
+                RobotMotion.CW(Rspeed)
             
             elif(Fx < screen_center_x):
                 #crab left or turn CCW
-                RobotMotion.CCW(kP*err)
+                RobotMotion.CCW(Rspeed)
 
             #adjust robot and return that you are not centered, and check if 
             # you are centered in the next loop
@@ -135,12 +142,12 @@ def main():
     while (not centered):
         #capture image 
         imageFrame = captureImage(camera)
-        Fx,Fy, imageFrame, green_mask = getFlagCenter(imageFrame)     
+        Fx,Fy, newX = getFlagCenter(imageFrame)
+        #print(Fx)
         #cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
         #cv2.imshow("Mask", green_mask)
         #keep going in a loop until you are centered with flag
-        centered = centerWithFlag(Fx)
-        
+        centered = centerWithFlag(newX)
         
     
 if __name__ == "__main__":
