@@ -19,10 +19,11 @@
 #define frontRight  12
 #define edgeRight  13
 
+
 //TESTING
 /////////////////////////////////
-#define sideLeft
-#define sideRight
+#define sideLeft 11
+#define sideRight 10
 /////////////////////////////////
 
 
@@ -40,21 +41,31 @@ NewPing EL(edgeLeft, edgeLeft, MAX_DISTANCE);
 NewPing FL(frontLeft, frontLeft, MAX_DISTANCE);
 NewPing FR(frontRight, frontRight, MAX_DISTANCE);
 NewPing ER(edgeRight, edgeRight, MAX_DISTANCE);
+NewPing SR(sideRight, sideRight, MAX_DISTANCE);
+NewPing SL(sideLeft, sideLeft, MAX_DISTANCE);
+
+
 
 
 // Define Variables
 
-float duration1; // Stores HC-SR04 pulse duration value
-float distance1; // Stores calculated distance in cm
+float EL_duration; // Stores HC-SR04 pulse duration value
+float EL_distance; // Stores calculated distance in cm
 
-float duration2; // Stores HC-SR04 pulse duration value
-float distance2; // Stores calculated distance in cm
+float FL_duration; // Stores HC-SR04 pulse duration value
+float FL_distance; // Stores calculated distance in cm
 
-float duration3; // Stores HC-SR04 pulse duration value
-float distance3; // Stores calculated distance in cm
+float FR_duration; // Stores HC-SR04 pulse duration value
+float FR_distance; // Stores calculated distance in cm
 
-float duration4; // Stores HC-SR04 pulse duration value
-float distance4; // Stores calculated distance in cm
+float ER_duration; // Stores HC-SR04 pulse duration value
+float ER_distance; // Stores calculated distance in cm
+
+float SR_duration; // Stores HC-SR04 pulse duration value
+float SR_distance; // Stores calculated distance in cm
+
+float SL_duration; // Stores HC-SR04 pulse duration value
+float SL_distance; // Stores calculated distance in cm
 
 float soundcm;  // Stores calculated speed of sound in cm/ms
 int iterations = 5;
@@ -71,30 +82,35 @@ void loop()
     
   soundcm =  331.4 / 10000;
     
-  duration1 = EL.ping_median(iterations);
-  duration2 = FL.ping_median(iterations);
-  duration3 = FR.ping_median(iterations);
-  duration4 = ER.ping_median(iterations);
+  EL_duration = EL.ping_median(iterations);
+  FL_duration = FL.ping_median(iterations);
+  FR_duration = FR.ping_median(iterations);
+  ER_duration = ER.ping_median(iterations);
+  SR_duration = SR.ping_median(iterations);
+  SL_duration = SL.ping_median(iterations);
 
   // Calculate the distance
-  distance1 = (duration1 / 2) * soundcm;
-  distance2 = (duration2 / 2) * soundcm;
-  distance3 = (duration3 / 2) * soundcm;
-  distance4 = (duration4 / 2) * soundcm;
+  EL_distance = (EL_duration / 2) * soundcm;
+  FL_distance = (FL_duration / 2) * soundcm;
+  FR_distance = (FR_duration / 2) * soundcm;
+  ER_distance = (ER_duration / 2) * soundcm;
+  SR_distance = (SR_duration / 2) * soundcm;
+  SL_distance = (SL_duration / 2) * soundcm;
+
 
   // Send US 1 results to Serial Monitor
  
     Serial.print(" m/s, ");
     Serial.print("Distance of edgeLeft: ");
 
-    if (distance1 >= 400 || distance1 <= 2) {
+    if (EL_distance >= 400 || EL_distance <= 2) {
     Serial.print("Out of range");
     }
-    else if (distance1 > 20) {
+    else if (EL_distance > 20) {
       
     } 
     else {
-    Serial.print(distance1);
+    Serial.print(EL_distance);
     Serial.print(" cm");
     delay(500);
     }
@@ -109,14 +125,14 @@ void loop()
     Serial.print(" m/s, ");
     Serial.print("Distance of frontLeft: ");
 
-    if (distance2 >= 400 || distance2 <= 2) {
+    if (FL_distance >= 400 || FL_distance <= 2) {
     Serial.print("Out of range");
     }
-    else if (distance2 > 20) {
+    else if (FL_distance > 20) {
       
     } 
     else {
-    Serial.print(distance2);
+    Serial.print(FL_distance);
     Serial.print(" cm");
     delay(500);
     }
@@ -132,14 +148,14 @@ void loop()
     Serial.print(" m/s, ");
     Serial.print("Distance of frontRight: ");
 
-    if (distance3 >= 400 || distance3 <= 2) {
+    if (FR_distance >= 400 || FR_distance <= 2) {
     Serial.print("Out of range");
     }
-    else if (distance3 > 20) {
+    else if (FR_distance > 20) {
       
     } 
     else {
-    Serial.print(distance3);
+    Serial.print(FR_distance);
     Serial.print(" cm");
     delay(500);
     }
@@ -156,14 +172,14 @@ void loop()
     Serial.print(" m/s, ");
     Serial.print("Distance of edgeRight: ");
 
-    if (distance4 >= 400 || distance4 <= 2) {
+    if (ER_distance >= 400 || ER_distance <= 2) {
     Serial.print("Out of range");
     }
-    else if (distance4 > 20) {
+    else if (ER_distance > 20) {
     
     } 
     else {
-    Serial.print(distance4);
+    Serial.print(ER_distance);
     Serial.print(" cm");
     delay(500);
     }
