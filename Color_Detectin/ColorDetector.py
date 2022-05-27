@@ -78,6 +78,9 @@ while(1):
     if len(contours) != 0:
         # find the biggest countour (c) by the area
         c = max(contours, key = cv2.contourArea)
+        epsilon = 0.01 * cv2.arcLength(c, True)
+        approximations = cv2.approxPolyDP(c, epsilon, True)
+        #cv2.drawContours(imageFrame, [approximations], 0, (255,255,0), 3)
         x,y,w,h = cv2.boundingRect(c)  
         imageFrame = cv2.rectangle(imageFrame, (x, y), 
                                    (x + w, y + h),
@@ -88,11 +91,21 @@ while(1):
         cx = int(M["m10"]/M["m00"])
         cy = int(M["m01"]/M["m00"])
         
+        extTop = tuple(c[c[:, :, 1].argmin()][0])
+        extBot = tuple(c[c[:, :, 1].argmax()][0])
+        extBot_ApproxC = tuple(approximations[approximations[:, :, 1].argmax()][0])
+
+        #cv2.circle(imageFrame, extBot_ApproxC, 8, (255, 255, 0), -1)
+        cv2.circle(imageFrame, extBot, 8, (0, 255, 0), -1)
+        cv2.circle(imageFrame, extTop, 8, (255, 0, 0), -1)
+        
         cv2.circle(imageFrame,(cx,cy),7,(255,255,255),-1)
         cv2.line(imageFrame,(300,0),(300,480),(255,255,255),3)           
         cv2.line(imageFrame,(340,0),(340,480),(255,255,255),3)                 
         
-        imageFrame = putIterationsPerSec(imageFrame, cps.countsPerSec())      
+        imageFrame=cv2.flip(imageFrame,0)
+        imageFrame = putIterationsPerSec(imageFrame, cps.countsPerSec())
+
     # Program TermQination
     cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
     cv2.imshow("Mask", green_mask)
