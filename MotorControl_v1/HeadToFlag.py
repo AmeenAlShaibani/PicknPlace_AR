@@ -114,6 +114,8 @@ def centerWithFlag(Fx):
                 kP = 0.8
             if(err < 60):
                 kP = 1
+            if(err < 40):
+                kP = 2
             print("kP: ", kP)
             Rspeed = kP*err
             if Rspeed > 100:
