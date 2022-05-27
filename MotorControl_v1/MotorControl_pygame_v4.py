@@ -308,6 +308,7 @@ def main():
                  #If key is lifted stop motors
                 elif event.type == pygame.KEYUP:
                     MotorRun(0,0,0,0)
+                    print("UP")
                     
                     
     #LEVEL 2

@@ -30,7 +30,7 @@ float distance3; // Stores calculated distance in cm
 float duration4; // Stores HC-SR04 pulse duration value
 float distance4; // Stores calculated distance in cm
 
-float soundcm;  // Stores calculated speed of sound in cm/ms
+float soundcm = 331.4 / 10000;;  // Stores calculated speed of sound in cm/ms
 int iterations = 5;
 
 //////////////////////Define Instances for Servo///////////////////////////////
@@ -59,6 +59,10 @@ void setup() {
   DSSERVO25KG_grab.attach(PWM_grab_Pin);
   DSSERVO25KG_lift.attach(PWM_lift_Pin);
 
+  distance1 = 0;
+  distance2=0;
+  distance3=0;
+  distance4=0;
 }
 
 void loop() {
@@ -67,8 +71,10 @@ void loop() {
     String USDATA = get_USdata();
     //only send data if there is something close to robot 
     //TODO: Make the side US distance be less than the front 2. 
-    if(distance1 < 15 || distance2 < 15 || distance3 < 15 || distance4 < 15){
+
+    if((distance1 < 15) || (distance2 < 15) || (distance3 < 15) || (distance4 < 15)){
       Serial.print(USDATA);
+      Serial.print('\n');
     }
   } else {
     StatusIndicator(data);
@@ -99,7 +105,29 @@ String get_USdata() {
   distance2 = (duration2 / 2) * soundcm;
   distance3 = (duration3 / 2) * soundcm;
   distance4 = (duration4 / 2) * soundcm;
-  String USDATA = distance1 + "," + distance2 + ","  + distance3 + "," + distance4;
+
+  if((distance1 < 2) || (distance1 > 400)) {
+    distance1 = 1000;
+  }
+  if ((distance2 < 2) || (distance2 > 400)) {
+    distance2 = 1000;
+  }
+  if ((distance3 < 2) || (distance3 > 400)) {
+    distance3 = 1000;
+  }
+  if ((distance4 < 2) || (distance4 > 400)) {
+    distance4 = 1000;
+  }
+    
+  
+  String USDATA = "";
+  USDATA += distance1 ;
+  USDATA += ",";
+  USDATA += distance2;
+  USDATA += ",";
+  USDATA += distance3 ;
+  USDATA += "," ;
+  USDATA += distance4;
   return USDATA;
 }
 

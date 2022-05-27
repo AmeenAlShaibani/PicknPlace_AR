@@ -1,12 +1,15 @@
 from open_motor_serial import open_motor
 import time
+import threading
 
 class RobotMotion:
+    
     ## Class Initializer
     def __init__(self):
         self.comms = open_motor()
         self.comms.init_serial_port("/dev/ttyACM0_teensy",115200,0.5)
-
+        self.lock = threading.Lock()
+        
 # FIXME: this is completely wrong, you shouldnt have speed, this is position 
     def PosRun(self, Mot0, Mot1, Mot2, Mot3, speed=300):
         #TODO: I need to the get the current PPR values for each motor, and add the PPR value I need 
