@@ -72,10 +72,9 @@ void loop() {
     //only send data if there is something close to robot 
     //TODO: Make the side US distance be less than the front 2. 
 
-    if((distance1 < 15) || (distance2 < 15) || (distance3 < 15) || (distance4 < 15)){
-      Serial.print(USDATA);
-      Serial.print('\n');
-    }
+    Serial.print(USDATA);
+    Serial.print('\n');
+    
   } else {
     StatusIndicator(data);
     ServoControl(data);

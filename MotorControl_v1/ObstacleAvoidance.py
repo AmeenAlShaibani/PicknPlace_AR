@@ -30,9 +30,11 @@ sys.path.append("../src/open_motor/")
 #Initialize Robot Motion class which controls robots
 RobotMotion = RobotMotion()
 
+moving = True
+
 # Function thread to get Ultrasonic data from Arduino 
 def get_USDATA():
-    global RobotMotion
+    global moving
     #TODO: Would there be a race condition between the .wait(), the Set(), and clear()?
     #  clear the event at beggining of thread 
     while True:
@@ -47,24 +49,16 @@ def get_USDATA():
             US3 = float(dataList[2])
             US4 = float(dataList[3])   
             print(US1, US2, US3, US4)
-            print("ultrasonic is far away: ", US4 > 15)
-            #if((US1 > 15) and (US2 > 15) and (US3 > 15) and (US4 > 15) and lock.locked()):
-                #lock.release()
-                #print("released")
-            print("lock is locked: ", RobotMotion.lock.locked())
-            print("we should lock: ", US4 < 15 and (not RobotMotion.lock.locked()))
-            if(US4 > 15 and RobotMotion.lock.locked()):
-                RobotMotion.lock.release()
-                print("released")
-            elif(US4 < 15 and (not RobotMotion.lock.locked())):
-                print("locked")
-                RobotMotion.lock.acquire()
+            if(US1 < 40 or US2 < 60 or US3 < 60 or US4 < 40 ):
+                moving = False
                 RobotMotion.right()
-                
+            elif(US1 > 40 and US2 > 60 and US3 > 60 and US4 > 40 ):
+                moving = True
 def main():
-    global RobotMotion
-    #print("RUNNING MAIN")
-    RobotMotion.forward()
+    
+    global moving
+    while(moving):#print("RUNNING MAIN")
+        RobotMotion.forward()
         
 if __name__ == "__main__":
 
