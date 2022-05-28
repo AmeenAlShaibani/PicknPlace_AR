@@ -90,5 +90,5 @@ class RobotMotion:
     def CW(self, speed=150):
         self.MotorRun(-1,-1,1,1,speed)
 
-    def stopRobot(self):
+    def stop(self):
         self.MotorRun(0,0,0,0)
