@@ -48,11 +48,11 @@ def get_USDATA():
             US2 = float(dataList[1])
             US3 = float(dataList[2])
             US4 = float(dataList[3])   
-            print(US1, US2, US3, US4)
-            if(US1 < 40 or US2 < 60 or US3 < 60 or US4 < 40 ):
+            #print(US1, US2, US3, US4)
+            if(US1 < 55 or US2 < 100 or US3 < 100 or US4 < 55 ):
                 moving = False
                 RobotMotion.right()
-            elif(US1 > 40 and US2 > 60 and US3 > 60 and US4 > 40 ):
+            elif(US1 > 55 and US2 > 100 and US3 > 100 and US4 > 55 ):
                 moving = True
 def main():
     
