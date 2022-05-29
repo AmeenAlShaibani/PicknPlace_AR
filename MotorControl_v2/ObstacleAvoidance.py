@@ -18,11 +18,15 @@ from RobotMotion import RobotMotion
 #ARDUINO SERIAL INIT.
 #######################################################################
 ser = serial.Serial('/dev/ttyACM0_Arduino', 57600, timeout=1)
-ser.setDTR(False)
+time.sleep(0.1)
+if(ser.isOpen()):
+    print("Serial Port Opened")
+ser.setDTR(False) # Restart Arduino
 time.sleep(1)
-ser.flushInput()
 ser.setDTR(True)
-ser.reset_input_buffer()
+time.sleep(2)
+ser.flushInput()
+#ser.reset_input_buffer()
 #######################################################################
  
 #import keyboard
@@ -36,13 +40,12 @@ blocked = False
 # Function thread to get Ultrasonic data from Arduino 
 def get_USDATA():
     global blocked
+    MovingRight = False
     #TODO: Would there be a race condition between the .wait(), the Set(), and clear()?
-    #  clear the event at beggining of thread 
-    while True:
-        #If there are incoming bits 
+    while True:#  clear the event at beggining of thread 
+        while ser.inWaiting()==0: pass
+            #If there are incoming bits 
         if  ser.inWaiting() > 0:
-            time.sleep(0.030)
-            print("SOMETHING")
             #read the data which is a string in the form: US1,US2,US3,US4
             dataRaw = ser.readline().decode('utf-8').rstrip()
             #Separate into a list with "," as separator
@@ -54,31 +57,32 @@ def get_USDATA():
             FR = float(dataList[3])
             ER = float(dataList[4])   
             SR = float(dataList[5])   
-   
-            ser.flush()
-            
-            print(SR, ER, FR, FL, EL, SL)
 
-            if(ER < 55 or FR < 100 or FL < 100 or EL < 55 ):
+            ser.flushInput()
+            #print(SR, ER, FR, FL, EL, SL)
+
+            if(ER < 70 or FR < 130 or FL < 130 or EL < 70 ):
                 blocked = True
                 #Turn towards left or right based on which reads a further distance
                 if(SR > SL):
+                    MovingRight = True
                     RobotMotion.right(200)
-                else:
+                elif(SR < SL and not MovingRight):
                     RobotMotion.left(200)
 
-            elif(ER > 55 and FR > 100 and FL > 100 and EL > 55 ):
+            elif(ER > 70 and FR > 140 and FL > 140 and EL > 70 ):
+                MovingRight = False
                 blocked = False
             
-            return FR, FL # if there is a reading return front two
-        
-        return None # if there is not reading return none
+            #return FR, FL # if there is a reading return front two
+    
+    #return None # if there is not reading return none
 
 def main():
     
     global blocked
     while(not blocked):#print("RUNNING MAIN")
-        RobotMotion.forward(150)
+        RobotMotion.forward(200)
         
 if __name__ == "__main__":
 
@@ -86,7 +90,6 @@ if __name__ == "__main__":
     US_thread = Thread(target=get_USDATA, args=(), daemon=True)
     #Start US thread
     US_thread.start()
-    
     while True:
         main()
         

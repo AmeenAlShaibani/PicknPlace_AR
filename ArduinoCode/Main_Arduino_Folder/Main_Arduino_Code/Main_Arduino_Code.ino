@@ -85,7 +85,6 @@ void loop() {
     String USDATA = get_USdata();
     //only send data if there is something close to robot 
     //TODO: Make the side US distance be less than the front 2. 
-
     Serial.print(USDATA);
     Serial.print('\n');
     
@@ -93,7 +92,6 @@ void loop() {
     StatusIndicator(data);
     ServoControl(data);
   }
-  delay(500);
 }
 
 String readSerialPort() {
@@ -101,8 +99,6 @@ String readSerialPort() {
   if (Serial.available() > 0) {
     delay(10);
     data = Serial.readStringUntil('\n');
-    Serial.println(data);
-    Serial.flush();
   }
   return data;
 }
@@ -110,15 +106,15 @@ String readSerialPort() {
 String get_USdata() { 
 
   EL_duration = EL.ping_median(iterations);
-  delay(50);
+  delay(10);
   FL_duration = FL.ping_median(iterations);
-  delay(50);
+  delay(10);
   FR_duration = FR.ping_median(iterations);
-  delay(50);
+  delay(10);
   ER_duration = ER.ping_median(iterations);
-  delay(50);
+  delay(10);
   SR_duration = SR.ping_median(iterations);
-  delay(50);
+  delay(10);
   SL_duration = SL.ping_median(iterations);
 
   // Calculate the distance
@@ -129,7 +125,7 @@ String get_USdata() {
   SR_distance = (SR_duration / 2) * soundcm;
   SL_distance = (SL_duration / 2) * soundcm;
 
-  if((EL_distance < 2) || (EL_distance > 400)) {
+  if ((EL_distance < 2) || (EL_distance > 400)) {
     EL_distance = 1000;
   }
   if ((FL_distance < 2) || (FL_distance > 400)) {
