@@ -113,7 +113,7 @@ void loop()
     else {
     Serial.print(EL_distance);
     Serial.print(" cm");
-    delay(500);
+    delay(50);
     }
   
     Serial.println(" ");
@@ -135,7 +135,7 @@ void loop()
     else {
     Serial.print(FL_distance);
     Serial.print(" cm");
-    delay(500);
+    delay(50);
     }
   
     Serial.println(" ");
@@ -158,7 +158,7 @@ void loop()
     else {
     Serial.print(FR_distance);
     Serial.print(" cm");
-    delay(500);
+    delay(50);
     }
   
   Serial.println(" ");
@@ -182,7 +182,7 @@ void loop()
     else {
     Serial.print(ER_distance);
     Serial.print(" cm");
-    delay(500);
+    delay(50);
     }
   
   Serial.println(" ");
@@ -203,7 +203,7 @@ void loop()
     else {
     Serial.print(SL_distance);
     Serial.print(" cm");
-    delay(500);
+    delay(50);
     }
   
   Serial.println(" ");
@@ -224,7 +224,7 @@ void loop()
     else {
     Serial.print(SR_distance);
     Serial.print(" cm");
-    delay(500);
+    delay(50);
     }
   
   Serial.println(" ");
