@@ -30,9 +30,9 @@ mode = "RC"
 
 #Robot States
 ######################
+Avoiding = True #We start in avoiding mode, and turn off after avoiding obstacles
 FindingFlag = False
 GettingFlag = False
-Avoiding = False
 blocked = False
 ######################
 
@@ -481,7 +481,6 @@ def main():
 ####################################################################
     elif mode == "Confirmation":
         #MAIN ROBOT STATES
-        global FlagsDelivered
         global Avoiding
         global FindingFlag
         global GettingFlag
@@ -495,6 +494,9 @@ def main():
         global hallwayCenterComing
         global Delivered
 
+        #Number of Flags delivered
+        global FlagsDelivered
+
         ser.write(b"Confirmation Mode\n")
         time.sleep(0.25)
         openGrabbingClaw()
@@ -502,11 +504,10 @@ def main():
         liftClaw()
         print("I am in Confirmation Mode :)")
 
-        Avoiding = True # Initialize robot mode to Avoiding 
         while(mode == "Confirmation"):
             
             if(Avoiding and not blocked and mode == "Confirmation"):
-                RobotMotion.forward()
+                RobotMotion.forward(200)
                 x1, y1 = get_Position()
                 if(x1 > 14.5):
                     Avoiding = False
@@ -517,9 +518,9 @@ def main():
                 #Go to center of hallway
                 while(not hallwayCenterGoing and mode == "Confirmation"):
                     x1, y1 = get_Position()
-                    if(x1 > 14.53 and y1 < 0.936):
+                    if(x1 > 14.53 and y1 < 0.936 and mode == "Confirmation"):
                         hallwayCenterGoing = True
-                    else:
+                    elif(mode == "Confirmation"):
                         FindHeading(15.65, 0.82)
                         RobotMotion.forward(200)
                         time.sleep(1.5) #TODO: Tune this number
@@ -529,9 +530,9 @@ def main():
                 #go to the Flag zone
                 while(not flagZone and mode == "Confirmation"):
                     x1, y1 = get_Position()
-                    if(x1 > 16.6):
+                    if(x1 > 16.6 and mode == "Confirmation"):
                         flagZone = True
-                    else:
+                    elif(mode == "Confirmation"):
                         FindHeading(16.6,0.936)
                         RobotMotion.forward(200)
                         time.sleep(1.5) #TODO: Tune this number
@@ -568,9 +569,9 @@ def main():
 
                 while(not hallwayCenterComing and mode == "Confirmation"):
                     x1, y1 = get_Position()
-                    if(x1 < 16.2):
+                    if(x1 < 16.2 and mode == "Confirmation"):
                         hallwayCenterComing = True
-                    else:
+                    elif(mode == "Confirmation"):
                         FindHeading(15.65,0.82)
                         RobotMotion.forward(200)
                         time.sleep(1.5) #TODO: Tune this number
@@ -587,9 +588,9 @@ def main():
                         openGrabbingClaw()
                         Delivered = True
                         FlagsDelivered += 1
-                        if(FlagsDelivered == 2):
+                        if(FlagsDelivered == 2 and mode == "Confirmation"):
                             mode = "RC"
-                        else:
+                        elif(mode == "Confirmation"):
                             RobotMotion.backward()
                             time.sleep(1)
                             RobotMotion.stop()
@@ -597,7 +598,7 @@ def main():
                             resetSubStates()
                             GettingFlag = False
                             FindingFlag = True
-                    else:
+                    elif(mode == "Confirmation"):
                         FindHeading(15.43,6.83)
                         RobotMotion.forward(200)
                         time.sleep(2)
@@ -622,7 +623,7 @@ if __name__ == "__main__":
 
     #Create a camera object and initialize it
     camera = cv2.VideoCapture(0)
-    camera.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+    camera.set(cv2.CAP_PROP_BUFFERSIZE, 1) # make buffer size = 1 
 
     #Make sure marvelmind is connected after connecting the motor controller
     #since we use ACM1 and not ACM0
@@ -633,14 +634,14 @@ if __name__ == "__main__":
     
     hedge.start() # start thread
     
-    #Create US thread with the get_USDATA function and the corresponding queue
+    #Create US thread with the get_USDATA function
     US_thread = Thread(target=get_USDATA, args=(), daemon=True)
     #Start US thread
     US_thread.start()
 
-        #Create US thread with the get_USDATA function and the corresponding queue
+    #Create thread to change the mode of the robot
     mode_thread = Thread(target=modeSwitch, args=(), daemon=True)
-    #Start US thread
+    #Start Mode thread
     mode_thread.start()
 
     while True:
