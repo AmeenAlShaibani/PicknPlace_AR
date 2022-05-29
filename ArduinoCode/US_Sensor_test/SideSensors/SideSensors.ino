@@ -18,12 +18,8 @@
 #define frontLeft 2
 #define frontRight  12
 #define edgeRight  13
-
-//TESTING
-/////////////////////////////////
 #define sideLeft 10
 #define sideRight 11
-/////////////////////////////////
 
 
 #define MAX_DISTANCE 400
