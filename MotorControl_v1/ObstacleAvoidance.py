@@ -30,11 +30,11 @@ sys.path.append("../src/open_motor/")
 #Initialize Robot Motion class which controls robots
 RobotMotion = RobotMotion()
 
-moving = True
+blocked = True
 
 # Function thread to get Ultrasonic data from Arduino 
 def get_USDATA():
-    global moving
+    global blocked
     #TODO: Would there be a race condition between the .wait(), the Set(), and clear()?
     #  clear the event at beggining of thread 
     while True:
@@ -44,20 +44,34 @@ def get_USDATA():
             dataRaw = ser.readline().decode('utf-8').rstrip()
             #Separate into a list with "," as separator
             dataList = dataRaw.split(",")
-            US1 = float(dataList[0])
-            US2 = float(dataList[1])
-            US3 = float(dataList[2])
-            US4 = float(dataList[3])   
+            SR = float(dataList[0])
+            ER = float(dataList[1])
+            FR = float(dataList[2])
+            FL = float(dataList[3])
+            EL = float(dataList[4])   
+            SL = float(dataList[5])   
+   
             #print(US1, US2, US3, US4)
-            if(US1 < 55 or US2 < 100 or US3 < 100 or US4 < 55 ):
-                moving = False
-                RobotMotion.right()
-            elif(US1 > 55 and US2 > 100 and US3 > 100 and US4 > 55 ):
-                moving = True
+
+            if(ER < 55 or FR < 100 or FL < 100 or EL < 55 ):
+                blocked = True
+                #Turn towards left or right based on which reads a further distance
+                if(SR > SL):
+                    RobotMotion.right()
+                else:
+                    RobotMotion.left()
+
+            elif(ER > 55 and FR > 100 and FL > 100 and 55 > 55 ):
+                blocked = False
+            
+            return FR, FL # if there is a reading return front two
+        
+        return None # if there is not reading return none
+
 def main():
     
-    global moving
-    while(moving):#print("RUNNING MAIN")
+    global blocked
+    while(not blocked):#print("RUNNING MAIN")
         RobotMotion.forward()
         
 if __name__ == "__main__":

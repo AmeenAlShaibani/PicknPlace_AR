@@ -3,34 +3,44 @@
 
 /////////////////////define constants for the Ultrasonics////////////////////////////
 
-#define US1  3  // Trigger and Echo both on pin 10
-#define US2  4
-#define US3  12
-#define US4  13
-#define US5 
-#define US6
+// Define Constants
+#define edgeLeft  3  
+#define frontLeft 2
+#define frontRight  12
+#define edgeRight  13
+#define sideLeft 10
+#define sideRight 11
 
 #define MAX_DISTANCE 400
 
-NewPing sonar1(US1, US1, MAX_DISTANCE);
-NewPing sonar2(US2, US2, MAX_DISTANCE);
-NewPing sonar3(US3, US3, MAX_DISTANCE);
-NewPing sonar4(US4, US4, MAX_DISTANCE);
+NewPing EL(edgeLeft, edgeLeft, MAX_DISTANCE);
+NewPing FL(frontLeft, frontLeft, MAX_DISTANCE);
+NewPing FR(frontRight, frontRight, MAX_DISTANCE);
+NewPing ER(edgeRight, edgeRight, MAX_DISTANCE);
+NewPing SR(sideRight, sideRight, MAX_DISTANCE);
+NewPing SL(sideLeft, sideLeft, MAX_DISTANCE);
 
 
 // Define Variables
 
-float duration1; // Stores HC-SR04 pulse duration value
-float distance1; // Stores calculated distance in cm
 
-float duration2; // Stores HC-SR04 pulse duration value
-float distance2; // Stores calculated distance in cm
+float EL_duration; // Stores HC-SR04 pulse duration value
+float EL_distance; // Stores calculated distance in cm
 
-float duration3; // Stores HC-SR04 pulse duration value
-float distance3; // Stores calculated distance in cm
+float FL_duration; // Stores HC-SR04 pulse duration value
+float FL_distance; // Stores calculated distance in cm
 
-float duration4; // Stores HC-SR04 pulse duration value
-float distance4; // Stores calculated distance in cm
+float FR_duration; // Stores HC-SR04 pulse duration value
+float FR_distance; // Stores calculated distance in cm
+
+float ER_duration; // Stores HC-SR04 pulse duration value
+float ER_distance; // Stores calculated distance in cm
+
+float SR_duration; // Stores HC-SR04 pulse duration value
+float SR_distance; // Stores calculated distance in cm
+
+float SL_duration; // Stores HC-SR04 pulse duration value
+float SL_distance; // Stores calculated distance in cm
 
 float soundcm = 331.4 / 10000;;  // Stores calculated speed of sound in cm/ms
 int iterations = 5;
@@ -61,10 +71,12 @@ void setup() {
   DSSERVO25KG_grab.attach(PWM_grab_Pin);
   DSSERVO25KG_lift.attach(PWM_lift_Pin);
 
-  distance1 = 0;
-  distance2=0;
-  distance3=0;
-  distance4=0;
+  EL_distance=0;
+  FL_distance=0;
+  FR_distance=0;
+  ER_distance=0;
+  SR_distance=0;
+  SL_distance=0;
 }
 
 void loop() {
@@ -96,39 +108,58 @@ String readSerialPort() {
 }
 
 String get_USdata() { 
-  duration1 = sonar1.ping_median(iterations);
-  duration2 = sonar2.ping_median(iterations);
-  duration3 = sonar3.ping_median(iterations);
-  duration4 = sonar4.ping_median(iterations);
+
+  EL_duration = EL.ping_median(iterations);
+  delay(50);
+  FL_duration = FL.ping_median(iterations);
+  delay(50);
+  FR_duration = FR.ping_median(iterations);
+  delay(50);
+  ER_duration = ER.ping_median(iterations);
+  delay(50);
+  SR_duration = SR.ping_median(iterations);
+  delay(50);
+  SL_duration = SL.ping_median(iterations);
 
   // Calculate the distance
-  distance1 = (duration1 / 2) * soundcm;
-  distance2 = (duration2 / 2) * soundcm;
-  distance3 = (duration3 / 2) * soundcm;
-  distance4 = (duration4 / 2) * soundcm;
+  EL_distance = (EL_duration / 2) * soundcm;
+  FL_distance = (FL_duration / 2) * soundcm;
+  FR_distance = (FR_duration / 2) * soundcm;
+  ER_distance = (ER_duration / 2) * soundcm;
+  SR_distance = (SR_duration / 2) * soundcm;
+  SL_distance = (SL_duration / 2) * soundcm;
 
-  if((distance1 < 2) || (distance1 > 400)) {
-    distance1 = 1000;
+  if((EL_distance < 2) || (EL_distance > 400)) {
+    EL_distance = 1000;
   }
-  if ((distance2 < 2) || (distance2 > 400)) {
-    distance2 = 1000;
+  if ((FL_distance < 2) || (FL_distance > 400)) {
+    FL_distance = 1000;
   }
-  if ((distance3 < 2) || (distance3 > 400)) {
-    distance3 = 1000;
+  if ((FR_distance < 2) || (FR_distance > 400)) {
+    FR_distance = 1000;
   }
-  if ((distance4 < 2) || (distance4 > 400)) {
-    distance4 = 1000;
+  if ((ER_distance < 2) || (ER_distance > 400)) {
+    ER_distance = 1000;
   }
-    
+  if ((SR_distance < 2) || (SR_distance > 400)) {
+    SR_distance = 1000;
+  }
+  if ((SL_distance < 2) || (SL_distance > 400)) {
+    SL_distance = 1000;
+  }  
   
   String USDATA = "";
-  USDATA += distance1 ;
+  USDATA += SR_distance ;
   USDATA += ",";
-  USDATA += distance2;
+  USDATA += ER_distance;
   USDATA += ",";
-  USDATA += distance3 ;
+  USDATA += FR_distance ;
   USDATA += "," ;
-  USDATA += distance4;
+  USDATA += FL_distance;
+  USDATA += "," ;
+  USDATA += EL_distance;
+  USDATA += "," ;
+  USDATA += SL_distance;
   return USDATA;
 }
 

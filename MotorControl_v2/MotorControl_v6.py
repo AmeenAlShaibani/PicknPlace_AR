@@ -15,7 +15,7 @@ from RobotMotion import RobotMotion
 
 #ARDUINO SERIAL INIT.
 #######################################################################
-ser = serial.Serial('/dev/ttyACM0_Arduino', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyACM0_Arduino', 57600, timeout=1)
 ser.reset_input_buffer()
 #######################################################################
 
@@ -72,24 +72,27 @@ def get_USDATA():
             dataRaw = ser.readline().decode('utf-8').rstrip()
             #Separate into a list with "," as separator
             dataList = dataRaw.split(",")
-            US1 = float(dataList[0])
-            US2 = float(dataList[1])
-            US3 = float(dataList[2])
-            US4 = float(dataList[3])   
+            SR = float(dataList[0])
+            ER = float(dataList[1])
+            FR = float(dataList[2])
+            FL = float(dataList[3])
+            EL = float(dataList[4])   
+            SL = float(dataList[5])   
+   
             #print(US1, US2, US3, US4)
 
-            if(US1 < 55 or US2 < 100 or US3 < 100 or US4 < 55 ):
+            if(ER < 55 or FR < 100 or FL < 100 or EL < 55 ):
                 blocked = True
                 #Turn towards left or right based on which reads a further distance
-                if(US5 > US6):
+                if(SR > SL):
                     RobotMotion.right()
                 else:
                     RobotMotion.left()
 
-            elif(US1 > 55 and US2 > 100 and US3 > 100 and US4 > 55 ):
+            elif(ER > 55 and FR > 100 and FL > 100 and 55 > 55 ):
                 blocked = False
             
-            return US2, US3 # if there is a reading return front two
+            return FR, FL # if there is a reading return front two
         
         return None # if there is not reading return none
     
