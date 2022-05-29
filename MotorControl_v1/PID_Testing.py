@@ -27,7 +27,7 @@ def main():
     test_val = 0
     pos0, pos1, pos2, pos3 = updateEncVal()
     #comms.send_pos_goal(pos0+10000,pos1-10000,pos2+10000,pos3+10000)
-    comms.send_pos_goal(0000,-0000,0000,0000)
+    #comms.send_pos_goal(0000,-0000,0000,0000)
     #comms.send_pwm_goal(00,00,00,0)
     #comms.send_pos_goal(00,00,00,0)
 
@@ -98,12 +98,8 @@ def main():
 #    comms.send_pos_goal(0,0,0,0)
 #     comms.send_pos_goal(fullRot,fullRot,fullRot,fullRot)
 #     comms.send_pos_goal(ROT,ROT,ROT,ROT)
-
-    
-
-    while True:
-        print("Response:" + comms.get_response())
-        time.sleep(0.05)
+    print("Response:" + comms.get_response())
+    comms.send_vel_goal(20,20,20,20)
 
 
 if __name__ == "__main__":
@@ -111,6 +107,7 @@ if __name__ == "__main__":
 #     comms.send_pid_vars_solo_vel(1,1,0,0)
 #     comms.send_pid_vars_solo_vel(2,0.5,1,0)
 #     comms.send_pid_vars_solo_vel(3,1,0,0)
+   while True:
     main()
 
 
