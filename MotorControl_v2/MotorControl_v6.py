@@ -111,20 +111,21 @@ def get_USDATA():
 #Function to check the mode 
 def modeSwitch():
     global mode
-    if(mode is not "RC"):
-        for event in pygame.event.get():
-            #if key is pressed move motor based on key            
-            if kp.getKey('1'):
-                mode = "RC"
+    while True:
+        if((mode is not "RC")):
+            for event in pygame.event.get():
+                #if key is pressed move motor based on key            
+                if kp.getKey('1'):
+                    mode = "RC"
+                    
+                elif kp.getKey('2'):
+                    mode = "Confirmation"
                 
-            elif kp.getKey('2'):
-                mode = "Confirmation"
-            
-            elif kp.getKey('3'):
-                mode = "Scout"
-                
-            else:
-                mode = mode
+                elif kp.getKey('3'):
+                    mode = "Scout"
+                    
+                else:
+                    mode = mode
 
 #Function to find heading for the first time 
 def FindHeading(goalX, goalY, timeSleepForward=2):
@@ -628,10 +629,9 @@ def main():
     elif mode == "Scout":
         ser.write(b"Scout Mode\n")
         print("I am in Scout Mode :)")
-        while(mode == "Scout"):
+        while(mode == "Scout"): pass
             
-            #Check if user switched mode        
-            modeSwitch()
+            
             
         
 if __name__ == "__main__":
