@@ -12,18 +12,22 @@
 
 // Include NewPing Library
 #include "NewPing.h"
+#include <SoftwareSerial.h>
+
+const int US100_TX = 3;
+const int US100_RX = 2;
+SoftwareSerial mySerial(US100_RX, US100_TX);
 
 // Define Constants
-#define edgeLeft  3  // Trigger and Echo both on pin 10
-#define frontLeft  4
+#define edgeLeft  3  
+#define frontLeft 2
 #define frontRight  12
 #define edgeRight  13
 
-
 //TESTING
 /////////////////////////////////
-#define sideLeft 11
-#define sideRight 10
+#define sideLeft 10
+#define sideRight 11
 /////////////////////////////////
 
 
@@ -38,14 +42,11 @@
 /////////////////////////////////
 
 NewPing EL(edgeLeft, edgeLeft, MAX_DISTANCE);
-NewPing FL(frontLeft, frontLeft, MAX_DISTANCE);
+NewPing EL(frontLeft, frontLeft, MAX_DISTANCE);
 NewPing FR(frontRight, frontRight, MAX_DISTANCE);
 NewPing ER(edgeRight, edgeRight, MAX_DISTANCE);
 NewPing SR(sideRight, sideRight, MAX_DISTANCE);
 NewPing SL(sideLeft, sideLeft, MAX_DISTANCE);
-
-
-
 
 // Define Variables
 
@@ -72,12 +73,12 @@ int iterations = 5;
 
 
 void setup() {
-  Serial.begin (4800);
+  Serial.begin (9600);
 }
 
 void loop()
 {
-    
+  
   //Sound speed in cm
     
   soundcm =  331.4 / 10000;
@@ -180,6 +181,48 @@ void loop()
     } 
     else {
     Serial.print(ER_distance);
+    Serial.print(" cm");
+    delay(500);
+    }
+  
+  Serial.println(" ");
+ 
+ //    // Send US 5 results to Serial Monitor
+
+ 
+
+    Serial.print(" m/s, ");
+    Serial.print("Distance of sideLeft: ");
+
+    if (SL_distance >= 400 || SL_distance <= 2) {
+    Serial.print("Out of range");
+    }
+    else if (SL_distance > 20) {
+    
+    } 
+    else {
+    Serial.print(SL_distance);
+    Serial.print(" cm");
+    delay(500);
+    }
+  
+  Serial.println(" ");
+ 
+ //    // Send US 6 results to Serial Monitor
+
+ 
+
+    Serial.print(" m/s, ");
+    Serial.print("Distance of sideRight: ");
+
+    if (SR_distance >= 400 || SR_distance <= 2) {
+    Serial.print("Out of range");
+    }
+    else if (SR_distance > 20) {
+    
+    } 
+    else {
+    Serial.print(SR_distance);
     Serial.print(" cm");
     delay(500);
     }
