@@ -12,11 +12,6 @@
 
 // Include NewPing Library
 #include "NewPing.h"
-#include <SoftwareSerial.h>
-
-const int US100_TX = 3;
-const int US100_RX = 2;
-SoftwareSerial mySerial(US100_RX, US100_TX);
 
 // Define Constants
 #define edgeLeft  3  
@@ -42,7 +37,7 @@ SoftwareSerial mySerial(US100_RX, US100_TX);
 /////////////////////////////////
 
 NewPing EL(edgeLeft, edgeLeft, MAX_DISTANCE);
-NewPing EL(frontLeft, frontLeft, MAX_DISTANCE);
+NewPing FL(frontLeft, frontLeft, MAX_DISTANCE);
 NewPing FR(frontRight, frontRight, MAX_DISTANCE);
 NewPing ER(edgeRight, edgeRight, MAX_DISTANCE);
 NewPing SR(sideRight, sideRight, MAX_DISTANCE);
@@ -102,37 +97,28 @@ void loop()
   // Send US 1 results to Serial Monitor
  
     Serial.print(" m/s, ");
-    Serial.print("Distance of edgeLeft: ");
-
-    if (EL_distance >= 400 || EL_distance <= 2) {
-    Serial.print("Out of range");
-    }
-    else if (EL_distance > 20) {
+    if (EL_distance > 20 || EL_distance < 1) {
       
     } 
     else {
+    Serial.print("Distance of edgeLeft: ");
     Serial.print(EL_distance);
     Serial.print(" cm");
     delay(50);
     }
   
     Serial.println(" ");
-
+    Serial.print(" m/s, ");
     
     
 
     // Send US 2 results to Serial Monitor
-  
-    Serial.print(" m/s, ");
-    Serial.print("Distance of frontLeft: ");
 
-    if (FL_distance >= 400 || FL_distance <= 2) {
-    Serial.print("Out of range");
-    }
-    else if (FL_distance > 20) {
+    if (FL_distance > 20 || FL_distance < 1 ) {
       
     } 
     else {
+    Serial.print("Distance of frontLeft: ");
     Serial.print(FL_distance);
     Serial.print(" cm");
     delay(50);
@@ -147,15 +133,12 @@ void loop()
 
  
     Serial.print(" m/s, ");
-    Serial.print("Distance of frontRight: ");
 
-    if (FR_distance >= 400 || FR_distance <= 2) {
-    Serial.print("Out of range");
-    }
-    else if (FR_distance > 20) {
+    if (FR_distance > 20 || FR_distance < 1)  {
       
     } 
     else {
+    Serial.print("Distance of frontRight: ");
     Serial.print(FR_distance);
     Serial.print(" cm");
     delay(50);
@@ -171,15 +154,12 @@ void loop()
  
 
     Serial.print(" m/s, ");
-    Serial.print("Distance of edgeRight: ");
-
-    if (ER_distance >= 400 || ER_distance <= 2) {
-    Serial.print("Out of range");
-    }
-    else if (ER_distance > 20) {
+    
+    if (ER_distance > 20 || ER_distance < 1) {
     
     } 
     else {
+    Serial.print("Distance of edgeRight: ");
     Serial.print(ER_distance);
     Serial.print(" cm");
     delay(50);
@@ -192,15 +172,12 @@ void loop()
  
 
     Serial.print(" m/s, ");
-    Serial.print("Distance of sideLeft: ");
 
-    if (SL_distance >= 400 || SL_distance <= 2) {
-    Serial.print("Out of range");
-    }
-    else if (SL_distance > 20) {
+    if (SL_distance > 20 || SL_distance < 1) {
     
     } 
     else {
+    Serial.print("Distance of sideLeft: ");
     Serial.print(SL_distance);
     Serial.print(" cm");
     delay(50);
@@ -213,15 +190,12 @@ void loop()
  
 
     Serial.print(" m/s, ");
-    Serial.print("Distance of sideRight: ");
-
-    if (SR_distance >= 400 || SR_distance <= 2) {
-    Serial.print("Out of range");
-    }
-    else if (SR_distance > 20) {
+    
+    if (SR_distance > 20 || SR_distance < 1) {
     
     } 
     else {
+    Serial.print("Distance of sideRight: ");
     Serial.print(SR_distance);
     Serial.print(" cm");
     delay(50);
