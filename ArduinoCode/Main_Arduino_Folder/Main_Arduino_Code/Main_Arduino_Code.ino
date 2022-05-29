@@ -7,6 +7,8 @@
 #define US2  4
 #define US3  12
 #define US4  13
+#define US5 
+#define US6
 
 #define MAX_DISTANCE 400
 
@@ -46,7 +48,7 @@ const int ledPin =  9;  // the number of the LED pin
 const int ledPin2 =  8; //Number of LED Pin
 
 void setup() {
-  Serial.begin(57600);
+  Serial.begin(115200);
   
 // initialize the LED pin as an output:
   pinMode(ledPin, OUTPUT);        
