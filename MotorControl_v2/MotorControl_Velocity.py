@@ -406,35 +406,35 @@ def RCMODE():
         if event.type == pygame.KEYDOWN:
             
             if kp.getKey('UP'):
-                RobotMotion.forward()
+                RobotMotion.forward(300)
 
                 #Backward
             elif kp.getKey('DOWN'):
-                RobotMotion.backward()
+                RobotMotion.backward(300)
 
                 #Right
             elif kp.getKey('RIGHT'):
-                RobotMotion.right()
+                RobotMotion.right(300)
 
                 #Left
             elif kp.getKey('LEFT'):
-                RobotMotion.left()
+                RobotMotion.left(300)
 
             #topright
             elif kp.getKey('e'): #SEE IF YOU CAN DO 'forward' AND 'RIGHT'
-                RobotMotion.topright()
+                RobotMotion.topright(300)
 
             #topleft
             elif kp.getKey('q'): #SEE IF YOU CAN DO 'LEFT' AND 'RIGHT'
-                RobotMotion.topleft()
+                RobotMotion.topleft(300)
 
             #bottomright
             elif kp.getKey('c'): #SEE IF YOU CAN DO 'forward' AND 'RIGHT'
-                RobotMotion.bottomright()
+                RobotMotion.bottomright(300)
 
             #bottomleft
             elif kp.getKey('z'): #SEE IF YOU CAN DO 'LEFT' AND 'RIGHT'
-                RobotMotion.bottomleft()
+                RobotMotion.bottomleft(300)
                 
             #CCW rotate
             elif kp.getKey('d'):

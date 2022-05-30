@@ -62,6 +62,7 @@ class RobotMotion:
 
     def forward(self, speed=200):
         self.MotorRun(1,1,1,1,speed)
+        print("Response:" + self.comms.get_response())
 
     def backward(self, speed=200):
         self.MotorRun(-1,-1,-1,-1,speed)
