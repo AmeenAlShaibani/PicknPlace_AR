@@ -26,7 +26,7 @@ class RobotMotion:
         self.comms.send_pos_goal(bottomrightWheel,toprightWheel,topleftWheel,bottomleftWheel)
 
     #Motor Control function
-    def MotorRun(self, Mot0, Mot1, Mot2, Mot3, speed=40):
+    def MotorRun(self, Mot0, Mot1, Mot2, Mot3, speed=200):
         
 
         toprightWheel = Mot1*speed
@@ -60,34 +60,34 @@ class RobotMotion:
         time.sleep(turningTime)
         self.stopRobot()
 
-    def forward(self, speed=40):
+    def forward(self, speed=200):
         self.MotorRun(1,1,1,1,speed)
 
-    def backward(self, speed=40):
+    def backward(self, speed=200):
         self.MotorRun(-1,-1,-1,-1,speed)
 
-    def right(self, speed=40):
+    def right(self, speed=200):
         self.MotorRun(1,-1,1,-1,speed)
 
-    def left(self, speed=40):
+    def left(self, speed=200):
         self.MotorRun(-1,1,-1,1,speed)
 
-    def topright(self, speed=40):
+    def topright(self, speed=200):
         self.MotorRun(1,0,1,0,speed)
 
-    def topleft(self, speed=40):
+    def topleft(self, speed=200):
         self.MotorRun(0,1,0,1,speed)
 
-    def bottomright(self, speed=40):
+    def bottomright(self, speed=200):
         self.MotorRun(-1,0,-1,0,speed)
 
     def bottomleft(self, speed=40):
         self.MotorRun(0,-1,0,-1,speed)
 
-    def CCW(self, speed=40):
+    def CCW(self, speed=200):
         self.MotorRun(1,1,-1,-1,speed)#we are turning at 150
 
-    def CW(self, speed=40):
+    def CW(self, speed=200):
         self.MotorRun(-1,-1,1,1,speed)
 
     def stop(self):
