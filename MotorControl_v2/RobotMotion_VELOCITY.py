@@ -29,9 +29,9 @@ class RobotMotion:
     def MotorRun(self, Mot0, Mot1, Mot2, Mot3, speed=200):
         
 
-        toprightWheel = Mot1*speed
+        toprightWheel = Mot1* (speed + 20)
         topleftWheel = Mot2*speed
-        bottomrightWheel = Mot0*speed
+        bottomrightWheel = Mot0* (speed + 20)
         bottomleftWheel = Mot3*speed
 
         #Adjusting motor direction
@@ -60,29 +60,29 @@ class RobotMotion:
         time.sleep(turningTime)
         self.stopRobot()
 
-    def forward(self, speed=200):
+    def forward(self, speed=300):
         self.MotorRun(1,1,1,1,speed)
-        print("Response:" + self.comms.get_response())
+        #print("Response:" + self.comms.get_response())
 
-    def backward(self, speed=200):
+    def backward(self, speed=300):
         self.MotorRun(-1,-1,-1,-1,speed)
 
-    def right(self, speed=200):
+    def right(self, speed=300):
         self.MotorRun(1,-1,1,-1,speed)
 
-    def left(self, speed=200):
+    def left(self, speed=300):
         self.MotorRun(-1,1,-1,1,speed)
 
-    def topright(self, speed=200):
+    def topright(self, speed=300):
         self.MotorRun(1,0,1,0,speed)
 
-    def topleft(self, speed=200):
+    def topleft(self, speed=300):
         self.MotorRun(0,1,0,1,speed)
 
-    def bottomright(self, speed=200):
+    def bottomright(self, speed=300):
         self.MotorRun(-1,0,-1,0,speed)
 
-    def bottomleft(self, speed=40):
+    def bottomleft(self, speed=300):
         self.MotorRun(0,-1,0,-1,speed)
 
     def CCW(self, speed=200):

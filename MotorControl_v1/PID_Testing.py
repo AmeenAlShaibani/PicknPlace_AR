@@ -109,7 +109,7 @@ def main():
         print("Stopping")
         time.sleep(1)
 
-        comms.send_vel_goal(200,2000,200,200)
+        comms.send_vel_goal(200,200,200,200)
         print("Response:" + comms.get_response())
         print("GOING UP")
         time.sleep(5)

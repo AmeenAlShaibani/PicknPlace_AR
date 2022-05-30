@@ -10,7 +10,7 @@ from MarvelMind import MarvelmindHedge
 import cv2
 import numpy as np
 from threading import Thread, Event
-from RobotMotion import RobotMotion
+from RobotMotion_VELOCITY import RobotMotion
 
 
 #ARDUINO SERIAL INIT.
@@ -37,16 +37,16 @@ mode = "RC"
 
 #Robot States
 ######################
-Avoiding = True #We start in avoiding mode, and turn off after avoiding obstacles
-FindingFlag = False
+Avoiding = False #We start in avoiding mode, and turn off after avoiding obstacles
+FindingFlag = True
 GettingFlag = False
 blocked = False
 ######################
 
 #Sub States
 ############################################
-hallwayCenterGoing = False
-flagZone = False
+hallwayCenterGoing = True
+flagZone = True
 centered_w_Flag = False
 captured = False
 hallwayCenterComin = False
@@ -67,13 +67,18 @@ FlagsDelivered = 0
 #Initialize pygame keyboard
 kp.init()
 
-# Function thread to get Ultrasonic data from Arduino 
+global FL
+global FR
+
 # Function thread to get Ultrasonic data from Arduino 
 def get_USDATA():
     global blocked
+    global FL
+    global FR
     MovingRight = False
+    MovingLeft = False
     #TODO: Would there be a race condition between the .wait(), the Set(), and clear()?
-    while True:#  clear the event at beggining of thread 
+    while (True):#  clear the event at beggining of thread 
         while ser.inWaiting()==0: pass
             #If there are incoming bits 
         if  ser.inWaiting() > 0:
@@ -90,19 +95,22 @@ def get_USDATA():
             SR = float(dataList[5])   
 
             ser.flushInput()
-            #print(SR, ER, FR, FL, EL, SL)
-
-            if((ER < 70 or FR < 130 or FL < 130 or EL < 70) and mode == "Confirmation"):
+            print(SR, ER, FR, FL, EL, SL)
+            #70 130 130 70
+            #55 90 90 55
+            if((ER < 55 or FR < 70 or FL < 70 or EL < 55) and mode == "Confirmation"):
                 blocked = True
                 #Turn towards left or right based on which reads a further distance
-                if(SR > SL):
+                if((SR > SL) and not MovingLeft):
                     MovingRight = True
-                    RobotMotion.right(200)
+                    RobotMotion.right(150)
                 elif(SR < SL and not MovingRight):
-                    RobotMotion.left(200)
+                    MovingLeft = True
+                    RobotMotion.left(150)
 
-            elif((ER > 70 and FR > 140 and FL > 140 and EL > 70) and mode == "Confirmation"):
+            elif((ER > 55 and FR > 70 and FL > 702 and EL > 55) and mode == "Confirmation"):
                 MovingRight = False
+                MovingLeft = False
                 blocked = False
             
             #return FR, FL # if there is a reading return front two
@@ -257,10 +265,10 @@ def WithinTolerance(tol, posX, posY,  goalX, goalY):
     else:   return False
 
 def closeGrabbingClaw():
-    ser.write(b"Close Servo_grab\n")
+    ser.write(b"Open Servo_grab\n")
 
 def openGrabbingClaw():
-    ser.write(b"Open Servo_grab\n")
+    ser.write(b"Close Servo_grab\n")
 
 def liftClaw():
     ser.write(b"Open Servo_lift\n")
@@ -467,7 +475,8 @@ def RCMODE():
             #Lift down
             elif kp.getKey('l'):
                 ser.write(b"Close Servo_lift\n")
-
+            
+                       
     # Mode Switch Check
             elif kp.getKey('2'):
                 mode = "Confirmation"
@@ -569,9 +578,8 @@ def main():
                 
                 #Capture the flag once identified
                 while (not captured and mode == "Confirmation"):
-                    RobotMotion.forward(100)
-                    US2, US3 = get_USDATA()
-                    if((US2 <= 7 or US3 <= 7) and mode == "Confirmation"): #TODO Tune this number
+                    dRobotMotion.forward(100)
+                    if((FL <= 7 or FR <= 7) and mode == "Confirmation"): #TODO Tune this number
                         RobotMotion.stop()
                         captured = True
                         lowerClaw()
