@@ -98,9 +98,21 @@ def main():
 #    comms.send_pos_goal(0,0,0,0)
 #     comms.send_pos_goal(fullRot,fullRot,fullRot,fullRot)
 #     comms.send_pos_goal(ROT,ROT,ROT,ROT)
-    print("Response:" + comms.get_response())
-    comms.send_vel_goal(20,20,20,20)
 
+    
+
+    while True:
+
+        
+        comms.send_vel_goal(0,0,0,0)
+        print("Response:" + comms.get_response())
+        print("Stopping")
+        time.sleep(1)
+
+        comms.send_vel_goal(200,2000,200,200)
+        print("Response:" + comms.get_response())
+        print("GOING UP")
+        time.sleep(5)
 
 if __name__ == "__main__":
 #     comms.send_pid_vars_solo_vel(0,1,0,0)
