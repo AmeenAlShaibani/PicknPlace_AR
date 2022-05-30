@@ -16,7 +16,7 @@ from RobotMotion import RobotMotion
 #ARDUINO SERIAL INIT.
 #######################################################################
 #Try changing to 115200
-ser = serial.Serial('/dev/ttyACM0_Arduino', 57600, timeout=1)
+ser = serial.Serial('/dev/ttyACM0_Arduino', 115200, timeout=1)
 time.sleep(0.1)
 if(ser.isOpen()):
     print("Arduino Serial Port Opened")

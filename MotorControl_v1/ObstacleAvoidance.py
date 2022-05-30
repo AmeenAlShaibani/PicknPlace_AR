@@ -17,7 +17,7 @@ from RobotMotion import RobotMotion
  
 #ARDUINO SERIAL INIT.
 #######################################################################
-ser = serial.Serial('/dev/ttyACM0_Arduino', 57600, timeout=1)
+ser = serial.Serial('/dev/ttyACM0_Arduino', 115200, timeout=1)
 ser.setDTR(False)
 time.sleep(1)
 ser.flushInput()
