@@ -125,24 +125,24 @@ String get_USdata() {
   SR_distance = (SR_duration / 2) * soundcm;
   SL_distance = (SL_duration / 2) * soundcm;
 
-//  if ((EL_distance < 2) || (EL_distance > 400)) {
-//    EL_distance = 1000;
-//  }
-//  if ((FL_distance < 2) || (FL_distance > 400)) {
-//    FL_distance = 1000;
-//  }
-//  if ((FR_distance < 2) || (FR_distance > 400)) {
-//    FR_distance = 1000;
-//  }
-//  if ((ER_distance < 2) || (ER_distance > 400)) {
-//    ER_distance = 1000;
-//  }
-//  if ((SR_distance < 2) || (SR_distance > 400)) {
-//    SR_distance = 1000;
-//  }
-//  if ((SL_distance < 2) || (SL_distance > 400)) {
-//    SL_distance = 1000;
-//  }  
+  if ((EL_distance < 2) || (EL_distance > 400)) {
+    EL_distance = 1000;
+  }
+  if ((FL_distance < 2) || (FL_distance > 400)) {
+    FL_distance = 1000;
+  }
+  if ((FR_distance < 2) || (FR_distance > 400)) {
+    FR_distance = 1000;
+  }
+  if ((ER_distance < 2) || (ER_distance > 400)) {
+    ER_distance = 1000;
+  }
+  if ((SR_distance < 2) || (SR_distance > 400)) {
+    SR_distance = 1000;
+  }
+  if ((SL_distance < 2) || (SL_distance > 400)) {
+    SL_distance = 1000;
+  }  
   
   String USDATA = "";
   USDATA += SR_distance ;

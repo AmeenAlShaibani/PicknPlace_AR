@@ -49,7 +49,7 @@ hallwayCenterGoing = True
 flagZone = True
 centered_w_Flag = False
 captured = False
-hallwayCenterComin = False
+hallwayCenterComing = False
 Delivered = False
 ############################################
 
@@ -95,10 +95,10 @@ def get_USDATA():
             SR = float(dataList[5])   
 
             ser.flushInput()
-            print(SR, ER, FR, FL, EL, SL)
+            #print(SR, ER, FR, FL, EL, SL)
             #70 130 130 70
             #55 90 90 55
-            if((ER < 55 or FR < 70 or FL < 70 or EL < 55) and mode == "Confirmation"):
+            if((ER < 55 or FR < 70 or FL < 70 or EL < 55) and mode == "Confirmation" and Avoiding):
                 blocked = True
                 #Turn towards left or right based on which reads a further distance
                 if((SR > SL) and not MovingLeft):
@@ -108,7 +108,7 @@ def get_USDATA():
                     MovingLeft = True
                     RobotMotion.left(150)
 
-            elif((ER > 55 and FR > 70 and FL > 702 and EL > 55) and mode == "Confirmation"):
+            elif((ER > 55 and FR > 70 and FL > 702 and EL > 55) and mode == "Confirmation" and Avoiding):
                 MovingRight = False
                 MovingLeft = False
                 blocked = False
@@ -332,15 +332,12 @@ def getFlagCenter(imageFrame):
         
         #Find the center of the box
         #TODO: YOU CAN REMOVE MOMENTS IF AVG IF EXT TOP AND BOT is GOOD
-        M = cv2.moments(c)
         extTop = tuple(c[c[:, :, 1].argmin()][0])        
         extBot = tuple(c[c[:, :, 1].argmax()][0])        
 
         avgX = (extTop[0]+extBot[0])/2
-        cx = int(M["m10"]/M["m00"])
-        cy = int(M["m01"]/M["m00"])
     
-    return cx,cy,avgX
+    return avgX
 
 def centerWithFlag(Fx):
     global withinTol
@@ -370,7 +367,7 @@ def centerWithFlag(Fx):
                 kP = 2
             print("kP: ", kP)
             Rspeed = kP*err
-            if Rspeed > 100:
+            if Rspeed > 100:#150
                 Rspeed = 100
             print("Speed: ", Rspeed)
             #TODO: sleeping for 0.625 second rotates around 25 degrees this needs to be tuned
@@ -387,8 +384,8 @@ def centerWithFlag(Fx):
             return False
 
     else:
-        #if no flag found, then rotate 20 degrees and repeat main 
-        RobotMotion.CW(150)
+        #if no flag found  then rotate 20 degrees and repeat main 
+        RobotMotion.CW(100)
         return False
 
 def resetSubStates():
@@ -564,31 +561,55 @@ def main():
                         time.sleep(1.5) #TODO: Tune this number
                         RobotMotion.stop()
                         time.sleep(5) #TODO Tune htis number
-                    
+                
+                #Ready the claw
+                lowerClaw()
+                time.sleep(0.5)
+                openGrabbingClaw()
+                time.sleep(0.5)
+                
                 #when in goal zone find the flag:
                 while (not centered_w_Flag and mode == "Confirmation"):
                     #capture image 
                     imageFrame = captureImage(camera)
-                    Fx,Fy, newX = getFlagCenter(imageFrame)
+                    newX = getFlagCenter(imageFrame)
                     #print(Fx)
                     #cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
                     #cv2.imshow("Mask", green_mask)
                     #keep going in a loop until you are centered with flag
                     centered_w_Flag = centerWithFlag(newX)
                 
+                
+                
                 #Capture the flag once identified
+                curTime = time.time()
                 while (not captured and mode == "Confirmation"):
-                    dRobotMotion.forward(100)
-                    if((FL <= 7 or FR <= 7) and mode == "Confirmation"): #TODO Tune this number
+                    if(time.time()-curTime < 4):
+                        RobotMotion.forward(150)
+                    else:
+                        #If robot moves for 2 seconds and has not captured then reorient 
+                        centered_w_Flag = False
+                        while (not centered_w_Flag and mode == "Confirmation"):
+                            #capture image 
+                            imageFrame = captureImage(camera)
+                            Fx,Fy, newX = getFlagCenter(imageFrame)
+                            #print(Fx)
+                            #cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
+                            #cv2.imshow("Mask", green_mask)
+                            #keep going in a loop until you are centered with flag
+                            centered_w_Flag = centerWithFlag(newX)
+                        curTime = time.time()
+                    print(FL,FR)  
+                    if((FL <= 15 or FR <= 15) and mode == "Confirmation"): #TODO Tune this number
                         RobotMotion.stop()
                         captured = True
-                        lowerClaw()
-                        time.sleep(1)
                         closeGrabbingClaw()
                         time.sleep(1)
                         liftClaw()
+                        time.sleep(1)
                         FindingFlag = False
                         GettingFlag = True
+                        
             
             if(GettingFlag and mode == "Confirmation"):
 
@@ -670,4 +691,4 @@ if __name__ == "__main__":
 
     while True:
         main()
-        
+        6
