@@ -60,19 +60,19 @@ void setup() {
   }
 
   mot0.setPID_vars_pos(2.5,0,0);
-  mot0.setPID_vars_vel(0.5,0.0,0.0);
+  mot0.setPID_vars_vel(0.83,0.0,0.0);
   mot0.set_Ticks_Per_Rotation(COUNT_PER_ROT);
 
   mot1.setPID_vars_pos(2.35,0,0);
-  mot1.setPID_vars_vel(0.5,0.0,0.0);
+  mot1.setPID_vars_vel(0.85,0.0,0.0);
   mot1.set_Ticks_Per_Rotation(COUNT_PER_ROT);
 
   mot2.setPID_vars_pos(2.56,0.0,0.0);
-  mot2.setPID_vars_vel(0.5,0.0,0.0);
+  mot2.setPID_vars_vel(0.8,0.0,0.0);
   mot2.set_Ticks_Per_Rotation(COUNT_PER_ROT);
 
   mot3.setPID_vars_pos(2.67,0,0);
-  mot3.setPID_vars_vel(0.6,0.0,0.0);
+  mot3.setPID_vars_vel(0.95,0.0,0.0);//kP=0.95
   mot3.set_Ticks_Per_Rotation(COUNT_PER_ROT);
 
 }
