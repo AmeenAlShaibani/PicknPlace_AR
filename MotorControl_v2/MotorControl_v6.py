@@ -47,6 +47,7 @@ blocked = False
 ############################################
 hallwayCenterGoing = True
 flagZone = True
+flagZone_interrupt = False
 centered_w_Flag = False
 captured = False
 hallwayCenterComing = False
@@ -70,6 +71,18 @@ kp.init()
 global FL
 global FR
 
+#Starts the Ultrasonic and ModeSwitch threads:
+def startThreads():
+    #Create US thread with the get_USDATA function
+    US_thread = Thread(target=get_USDATA, args=(), daemon=True)
+    #Start US thread
+    US_thread.start()
+
+    #Create thread to change the mode of the robot
+    mode_thread = Thread(target=modeSwitch, args=(), daemon=True)
+    #Start Mode thread
+    mode_thread.start()
+
 # Function thread to get Ultrasonic data from Arduino 
 def get_USDATA():
     global blocked
@@ -78,7 +91,7 @@ def get_USDATA():
     MovingRight = False
     MovingLeft = False
     #TODO: Would there be a race condition between the .wait(), the Set(), and clear()?
-    while (True):#  clear the event at beggining of thread 
+    while (not flagZone_interrupt):#  clear the event at beggining of thread 
         while ser.inWaiting()==0: pass
             #If there are incoming bits 
         if  ser.inWaiting() > 0:
@@ -120,7 +133,7 @@ def get_USDATA():
 #Function to check the mode 
 def modeSwitch():
     global mode
-    while True:
+    while (not flagZone_interrupt):
         if((mode is not "RC")):
             for event in pygame.event.get():
                 #if key is pressed move motor based on key            
@@ -395,6 +408,7 @@ def resetSubStates():
     global captured
     global hallwayCenterComing
     global Delivered
+    global flagZone_interrupt
 
     hallwayCenterGoing = False
     flagZone = False
@@ -402,6 +416,7 @@ def resetSubStates():
     captured = False
     hallwayCenterComing = False
     Delivered = False
+    flagZone_interrupt = False
 
 # RC mode funciton
 def RCMODE():
@@ -516,6 +531,7 @@ def main():
         global captured
         global hallwayCenterComing
         global Delivered
+        global flagZone_interrupt
 
         #Number of Flags delivered
         global FlagsDelivered
@@ -562,6 +578,11 @@ def main():
                         RobotMotion.stop()
                         time.sleep(5) #TODO Tune htis number
                 
+                #Stop the threads so that the processor can identify the flag
+                flagZone_interrupt = True
+
+                #I think flagZone_interrupt is always (flagZone and !captured)
+
                 #Ready the claw
                 lowerClaw()
                 time.sleep(0.5)
@@ -569,17 +590,14 @@ def main():
                 time.sleep(0.5)
                 
                 #when in goal zone find the flag:
-                while (not centered_w_Flag and mode == "Confirmation"):
-                    #capture image 
-                    imageFrame = captureImage(camera)
-                    newX = getFlagCenter(imageFrame)
-                    #print(Fx)
-                    #cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
-                    #cv2.imshow("Mask", green_mask)
-                    #keep going in a loop until you are centered with flag
-                    centered_w_Flag = centerWithFlag(newX)
+                while (not centered_w_Flag and mode == "Confirmation"): 
+                    imageFrame = captureImage(camera) #capture image
+                    newX = getFlagCenter(imageFrame) # obtain flag center 
+                    centered_w_Flag = centerWithFlag(newX) #center robot with the flag
                 
-                
+                #Once Centered with the Flag, reset the interrupt and restart the threads
+                flagZone_interrupt = False
+                startThreads()
                 
                 #Capture the flag once identified
                 curTime = time.time()
@@ -587,17 +605,17 @@ def main():
                     if(time.time()-curTime < 4):
                         RobotMotion.forward(150)
                     else:
-                        #If robot moves for 2 seconds and has not captured then reorient 
+                        #If robot moves for 2 seconds and has not captured then reorient
+                        flagZone_interrupt = True 
                         centered_w_Flag = False
                         while (not centered_w_Flag and mode == "Confirmation"):
-                            #capture image 
-                            imageFrame = captureImage(camera)
-                            newX = getFlagCenter(imageFrame)
-                            #print(Fx)
-                            #cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
-                            #cv2.imshow("Mask", green_mask)
-                            #keep going in a loop until you are centered with flag
-                            centered_w_Flag = centerWithFlag(newX)
+                            imageFrame = captureImage(camera) #capture image
+                            newX = getFlagCenter(imageFrame) # obtain flag center 
+                            centered_w_Flag = centerWithFlag(newX) #center robot with the flag
+                            flagZone_interrupt = not centered_w_Flag
+                            if(flagZone_interrupt == False):
+                                startThreads()
+
                         curTime = time.time()
                     print(FL,FR)  
                     if((FL <= 15 or FR <= 15) and mode == "Confirmation"): #TODO Tune this number
@@ -678,17 +696,10 @@ if __name__ == "__main__":
         hedge.tty= sys.argv[1]
     
     hedge.start() # start thread
-    
-    #Create US thread with the get_USDATA function
-    US_thread = Thread(target=get_USDATA, args=(), daemon=True)
-    #Start US thread
-    US_thread.start()
 
-    #Create thread to change the mode of the robot
-    mode_thread = Thread(target=modeSwitch, args=(), daemon=True)
-    #Start Mode thread
-    mode_thread.start()
+    #Starts the ultrasonic and mode switch threads
+    startThreads()
 
     while True:
         main()
-        6
+        
