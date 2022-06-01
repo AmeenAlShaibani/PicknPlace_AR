@@ -58,7 +58,7 @@ class RobotMotion:
             self.CCW()
 
         time.sleep(turningTime)
-        self.stopRobot()
+        self.stop()
 
     def forward(self, speed=300):
         self.MotorRun(1,1,1,1,speed)

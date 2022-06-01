@@ -35,7 +35,7 @@ while(1):
     _, imageFrame = webcam.read()
   
     #Blue the camera to reduce the noise
-    for i in range(7):
+    for i in range(5):
         imageFrame = cv2.GaussianBlur(imageFrame,(5,5),0)
 
     # Convert the imageFrame in 
@@ -58,7 +58,7 @@ while(1):
       
     # Apply a dilate filter to consolidate green pixels together
     green_mask - cv2.erode(green_mask, kernal, iterations =2)
-    green_mask = cv2.dilate(green_mask, kernal, iterations = 3)
+    green_mask = cv2.dilate(green_mask, kernal, iterations = 4)
 
     #green_mask = cv2.morphologyEx(green_mask, cv2.MORPH_CLOSE, kernal)
     #green_mask = cv2.morphologyEx(green_mask, cv2.MORPH_OPEN, kernal)
@@ -78,33 +78,34 @@ while(1):
     if len(contours) != 0:
         # find the biggest countour (c) by the area
         c = max(contours, key = cv2.contourArea)
-        epsilon = 0.01 * cv2.arcLength(c, True)
-        approximations = cv2.approxPolyDP(c, epsilon, True)
-        #cv2.drawContours(imageFrame, [approximations], 0, (255,255,0), 3)
-        x,y,w,h = cv2.boundingRect(c)  
-        imageFrame = cv2.rectangle(imageFrame, (x, y), 
-                                   (x + w, y + h),
-                                   (0, 255, 0), 2)
-        
-        #Find the center of the box 
-        M = cv2.moments(c)
-        cx = int(M["m10"]/M["m00"])
-        cy = int(M["m01"]/M["m00"])
-        
-        extTop = tuple(c[c[:, :, 1].argmin()][0])
-        extBot = tuple(c[c[:, :, 1].argmax()][0])
-        extBot_ApproxC = tuple(approximations[approximations[:, :, 1].argmax()][0])
+        if(cv2.contourArea(c) > 500):
+            epsilon = 0.01 * cv2.arcLength(c, True)
+            approximations = cv2.approxPolyDP(c, epsilon, True)
+            #cv2.drawContours(imageFrame, [approximations], 0, (255,255,0), 3)
+            x,y,w,h = cv2.boundingRect(c)  
+            imageFrame = cv2.rectangle(imageFrame, (x, y), 
+                                       (x + w, y + h),
+                                       (0, 255, 0), 2)
+            
+            #Find the center of the box 
+            M = cv2.moments(c)
+            cx = int(M["m10"]/M["m00"])
+            cy = int(M["m01"]/M["m00"])
+            
+            extTop = tuple(c[c[:, :, 1].argmin()][0])
+            extBot = tuple(c[c[:, :, 1].argmax()][0])
+            extBot_ApproxC = tuple(approximations[approximations[:, :, 1].argmax()][0])
 
-        #cv2.circle(imageFrame, extBot_ApproxC, 8, (255, 255, 0), -1)
-        cv2.circle(imageFrame, extBot, 8, (0, 255, 0), -1)
-        cv2.circle(imageFrame, extTop, 8, (255, 0, 0), -1)
-        
-        cv2.circle(imageFrame,(cx,cy),7,(255,255,255),-1)
-        cv2.line(imageFrame,(300,0),(300,480),(255,255,255),3)           
-        cv2.line(imageFrame,(340,0),(340,480),(255,255,255),3)                 
-        
-        imageFrame=cv2.flip(imageFrame,0)
-        imageFrame = putIterationsPerSec(imageFrame, cps.countsPerSec())
+            #cv2.circle(imageFrame, extBot_ApproxC, 8, (255, 255, 0), -1)
+            cv2.circle(imageFrame, extBot, 8, (0, 255, 0), -1)
+            cv2.circle(imageFrame, extTop, 8, (255, 0, 0), -1)
+            
+            cv2.circle(imageFrame,(cx,cy),7,(255,255,255),-1)
+            cv2.line(imageFrame,(300,0),(300,480),(255,255,255),3)           
+            cv2.line(imageFrame,(340,0),(340,480),(255,255,255),3)                 
+            
+            imageFrame=cv2.flip(imageFrame,0)
+            imageFrame = putIterationsPerSec(imageFrame, cps.countsPerSec())
 
     # Program TermQination
     cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
