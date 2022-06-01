@@ -79,18 +79,16 @@ def getFlagCenter(imageFrame):
     if len(contours) != 0:
         # find the biggest countour (c) by the area
         c = max(contours, key = cv2.contourArea)
-        
-        #Find the center of the box
-        #TODO: YOU CAN REMOVE MOMENTS IF AVG IF EXT TOP AND BOT is GOOD
-        M = cv2.moments(c)
-        extTop = tuple(c[c[:, :, 1].argmin()][0])        
-        extBot = tuple(c[c[:, :, 1].argmax()][0])        
+        if(cv2.contourArea(c) > 500):          
+            #Find the center of the box
+            #TODO: YOU CAN REMOVE MOMENTS IF AVG IF EXT TOP AND BOT is GOOD
+            extTop = tuple(c[c[:, :, 1].argmin()][0])        
+            extBot = tuple(c[c[:, :, 1].argmax()][0])        
 
-        avgX = (extTop[0]+extBot[0])/2
-        cx = int(M["m10"]/M["m00"])
-        cy = int(M["m01"]/M["m00"])
-    
-    return cx,cy,avgX
+            avgX = (extTop[0]+extBot[0])/2
+
+        
+        return avgX
 
 withinTol = 0
 def centerWithFlag(Fx):
@@ -109,13 +107,6 @@ def centerWithFlag(Fx):
     
             # Normalize error 
             err = float(abs(Fx-320)) #/320
-            print("err: ",err)
-            if(err < 100):
-                kP = 0.8
-            if(err < 60):
-                kP = 1
-            if(err < 40):
-                kP = 2
             print("kP: ", kP)
             Rspeed = kP*err
             if Rspeed > 100:
@@ -136,7 +127,7 @@ def centerWithFlag(Fx):
 
     else:
         #if no flag found, then rotate 20 degrees and repeat main 
-        RobotMotion.CW()
+        RobotMotion.CW(150)
         return False
 
 def main():
@@ -144,7 +135,7 @@ def main():
     while (not centered):
         #capture image 
         imageFrame = captureImage(camera)
-        Fx,Fy, newX = getFlagCenter(imageFrame)
+        newX = getFlagCenter(imageFrame)
         #print(Fx)
         #cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
         #cv2.imshow("Mask", green_mask)

@@ -10,7 +10,7 @@ from MarvelMind import MarvelmindHedge
 import cv2
 import numpy as np
 from threading import Thread, Event
-from RobotMotion import RobotMotion
+from RobotMotion_VELOCITY import RobotMotion
 
 
 #ARDUINO SERIAL INIT.
@@ -37,8 +37,8 @@ mode = "RC"
 
 #Robot States
 ######################
-Avoiding = False #We start in avoiding mode, and turn off after avoiding obstacles
-FindingFlag = True
+Avoiding = True #We start in avoiding mode, and turn off after avoiding obstacles
+FindingFlag = False
 GettingFlag = False
 blocked = False
 ######################
@@ -46,7 +46,7 @@ blocked = False
 #Sub States
 ############################################
 hallwayCenterGoing = True
-flagZone = True
+flagZone = False
 flagZone_interrupt = False
 centered_w_Flag = False
 captured = False
@@ -111,7 +111,7 @@ def get_USDATA():
             #print(SR, ER, FR, FL, EL, SL)
             #70 130 130 70
             #55 90 90 55
-            if((ER < 55 or FR < 70 or FL < 70 or EL < 55) and mode == "Confirmation" and Avoiding):
+            if((ER < 60 or FR < 70 or FL < 70 or EL < 60) and mode == "Confirmation" and Avoiding):
                 blocked = True
                 #Turn towards left or right based on which reads a further distance
                 if((SR > SL) and not MovingLeft):
@@ -121,7 +121,7 @@ def get_USDATA():
                     MovingLeft = True
                     RobotMotion.left(150)
 
-            elif((ER > 55 and FR > 70 and FL > 702 and EL > 55) and mode == "Confirmation" and Avoiding):
+            elif((ER > 60 and FR > 70 and FL > 70 and EL > 60) and mode == "Confirmation" and Avoiding):
                 MovingRight = False
                 MovingLeft = False
                 blocked = False
@@ -546,7 +546,7 @@ def main():
         while(mode == "Confirmation"):
             
             if(Avoiding and not blocked and mode == "Confirmation"):
-                RobotMotion.forward(200)
+                RobotMotion.forward(300)
                 x1, y1 = get_Position()
                 if(x1 > 14.5):
                     Avoiding = False

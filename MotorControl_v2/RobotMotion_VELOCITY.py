@@ -27,9 +27,9 @@ class RobotMotion:
 
     #Motor Control function
     def MotorRun(self, Mot0, Mot1, Mot2, Mot3, speed=200):
-        toprightWheel = Mot1* (speed + 20)
+        toprightWheel = Mot1* (speed + 30)#20
         topleftWheel = Mot2*speed
-        bottomrightWheel = Mot0* (speed + 20)
+        bottomrightWheel = Mot0* (speed + 30)
         bottomleftWheel = Mot3*speed
 
         #Adjusting motor direction
@@ -41,6 +41,8 @@ class RobotMotion:
         self.comms.send_vel_goal(bottomrightWheel,toprightWheel,topleftWheel,bottomleftWheel)
 
     def MotorRun_PWM(self, Mot0, Mot1, Mot2, Mot3, speed=300):
+        
+
         toprightWheel = Mot1*speed
         topleftWheel = Mot2*speed
         bottomrightWheel = Mot0*speed
