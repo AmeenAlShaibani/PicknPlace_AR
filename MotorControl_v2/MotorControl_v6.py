@@ -118,7 +118,7 @@ def get_USDATA():
             #print(SR, ER, FR, FL, EL, SL)
             #70 130 130 70
             #55 90 90 55
-            if((ER < 60 or FR < 70 or FL < 70 or EL < 60) and mode == "Confirmation" and Avoiding):
+            if((ER < 80 or FR < 80 or FL < 80 or EL < 80) and mode == "Confirmation" and Avoiding):
                 blocked = True
                 #Turn towards left or right based on which reads a further distance
                 if((SR > SL) and not MovingLeft):
@@ -128,7 +128,7 @@ def get_USDATA():
                     MovingLeft = True
                     RobotMotion.left(200)
 
-            elif((ER > 60 and FR > 70 and FL > 70 and EL > 60) and mode == "Confirmation" and Avoiding):
+            elif((ER > 80 and FR > 80 and FL > 80 and EL > 80) and mode == "Confirmation" and Avoiding):
                 MovingRight = False
                 MovingLeft = False
                 blocked = False
@@ -430,7 +430,7 @@ def resetSubStates():
     flagZone_interrupt = False
 
 def xSecsPassed(currTime, x):
-    newTime = time.time()
+    newTime = time.perf_counter()
     if((newTime - currTime) > x):
         return True
     else:
@@ -513,6 +513,9 @@ def RCMODE():
                 
             elif kp.getKey('3'):
                 mode = "Scout"
+    #Mode Marvel Mind
+            elif kp.getKey('m'):
+                print(get_Position())
                 
             #If key is lifted stop motors
         elif event.type == pygame.KEYUP:
@@ -568,18 +571,19 @@ def main():
         liftClaw()
         print("I am in Confirmation Mode :)")
 
-        NowTime = time.time()
+        NowTime = time.perf_counter()
         x1, y1 = get_Position()
 
         while(mode == "Confirmation"):
             if(Avoiding and not blocked and mode == "Confirmation"):
                 RobotMotion.forward(300)
                 if(xSecsPassed(NowTime, 10)):
+                    print("ORIENTING")
                     RobotMotion.stop()
-                    time.sleep(5)
-                    x2, y2 = get_Position()
-                    UpdateHeading(x1,y1,x2,y2,15,y1) #orient yourself forwards towards corridor
-                    NowTime = time.time() # update the current time 
+                    time.sleep(5)                   
+                    #x2, y2 = get_Position()
+                    #UpdateHeading(x1,y1,x2,y2,15,y1) #orient yourself forwards towards corridor
+                    NowTime = time.perf_counter() # update the current time 
                 if(x1 > 14.5):
                     Avoiding = False
                     FindingFlag = True
@@ -632,9 +636,9 @@ def main():
                 startThreads()
                 
                 #Capture the flag once identified
-                curTime = time.time()
+                curTime = time.perf_counter()
                 while (not captured and mode == "Confirmation"):
-                    if(time.time()-curTime < 4):
+                    if(time.perf_counter()-curTime < 4):
                         RobotMotion.forward(150)
                     else:
                         #If robot moves for 2 seconds and has not captured then reorient
@@ -648,7 +652,7 @@ def main():
                             if(flagZone_interrupt == False):
                                 startThreads()
 
-                        curTime = time.time()
+                        curTime = time.perf_counter()
                     print(FL,FR)  
                     if((FL <= 15 or FR <= 15) and mode == "Confirmation"): #TODO Tune this number
                         RobotMotion.stop()
