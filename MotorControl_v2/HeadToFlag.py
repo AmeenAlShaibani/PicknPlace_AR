@@ -99,7 +99,7 @@ def centerWithFlag(Fx):
     screen_center_x = 320 #center pixel of screen
     if (Fx != None): #if flag detected
         if (WithinTolerance(30,Fx,Fx,320,320)): #if flag centered
-            RobotMotion.stopRobot()
+            RobotMotion.stop()
             withinTol = withinTol + 1
             print("WitinTol:",withinTol)
             if(withinTol == 6):
