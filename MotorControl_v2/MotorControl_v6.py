@@ -47,11 +47,12 @@ blocked = False
 ############################################
 hallwayCenterGoing = True
 flagZone = False
-flagZone_interrupt = False
 centered_w_Flag = False
 captured = False
 hallwayCenterComing = False
 Delivered = False
+
+flagZone_interrupt = False # interrupt used to stop threads when needed
 ############################################
 
 #Initialize Camera Variables
@@ -70,6 +71,12 @@ kp.init()
 
 global FL
 global FR
+
+#global time variables
+global NowTime
+
+#global current Position variables
+global x1, y1
 
 #Starts the Ultrasonic and ModeSwitch threads:
 def startThreads():
@@ -116,10 +123,10 @@ def get_USDATA():
                 #Turn towards left or right based on which reads a further distance
                 if((SR > SL) and not MovingLeft):
                     MovingRight = True
-                    RobotMotion.right(150)
+                    RobotMotion.right(200) # was 150
                 elif(SR < SL and not MovingRight):
                     MovingLeft = True
-                    RobotMotion.left(150)
+                    RobotMotion.left(200)
 
             elif((ER > 60 and FR > 70 and FL > 70 and EL > 60) and mode == "Confirmation" and Avoiding):
                 MovingRight = False
@@ -250,6 +257,10 @@ def UpdateHeading(x1, y1, x2, y2, goalX, goalY):
 
     time.sleep(turningTime)
     RobotMotion.stop()
+
+    #update current position to the new position
+    x1 = x2
+    y1 = y2
     #print("Stopped")
 
 #Function to see if position is within a tolerance wrt to goal 
@@ -418,6 +429,13 @@ def resetSubStates():
     Delivered = False
     flagZone_interrupt = False
 
+def xSecsPassed(currTime, x):
+    newTime = time.time()
+    if((newTime - currTime) > x):
+        return True
+    else:
+        return False
+
 # RC mode funciton
 def RCMODE():
     global mode
@@ -536,6 +554,13 @@ def main():
         #Number of Flags delivered
         global FlagsDelivered
 
+        #Timing Variable
+        global NowTime
+
+        #global current Position variables
+        global x1, y1
+
+
         ser.write(b"Confirmation Mode\n")
         time.sleep(0.25)
         openGrabbingClaw()
@@ -543,11 +568,18 @@ def main():
         liftClaw()
         print("I am in Confirmation Mode :)")
 
+        NowTime = time.time()
+        x1, y1 = get_Position()
+
         while(mode == "Confirmation"):
-            
             if(Avoiding and not blocked and mode == "Confirmation"):
                 RobotMotion.forward(300)
-                x1, y1 = get_Position()
+                if(xSecsPassed(NowTime, 10)):
+                    RobotMotion.stop()
+                    time.sleep(5)
+                    x2, y2 = get_Position()
+                    UpdateHeading(x1,y1,x2,y2,15,y1) #orient yourself forwards towards corridor
+                    NowTime = time.time() # update the current time 
                 if(x1 > 14.5):
                     Avoiding = False
                     FindingFlag = True
