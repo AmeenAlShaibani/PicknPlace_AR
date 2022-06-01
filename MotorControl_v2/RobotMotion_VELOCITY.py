@@ -107,4 +107,4 @@ class RobotMotion:
         self.MotorRun_PWM(-1,-1,1,1,speed)
 
     def stop(self):
-        self.MotorRun(0,0,0,0)
+        self.MotorRun_PWM(0,0,0,0)

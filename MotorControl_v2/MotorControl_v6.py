@@ -577,13 +577,14 @@ def main():
         while(mode == "Confirmation"):
             if(Avoiding and not blocked and mode == "Confirmation"):
                 RobotMotion.forward(300)
-                if(counter > 100):
+                counter +=1
+                if(counter > 400):
                     print("ORIENTING")
                     RobotMotion.stop()
                     time.sleep(5)                   
                     #x2, y2 = get_Position()
                     #UpdateHeading(x1,y1,x2,y2,15,y1) #orient yourself forwards towards corridor
-                    NowTime = time.perf_counter() # update the current time 
+                    counter = 0
                 if(x1 > 14.5):
                     Avoiding = False
                     FindingFlag = True
