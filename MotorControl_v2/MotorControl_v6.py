@@ -13,6 +13,11 @@ from threading import Thread, Event
 from RobotMotion_VELOCITY import RobotMotion
 
 
+#There is a possibility that when battery is low, communication becomes slower, so you cant execute
+#multiple movement commands one after the other
+
+
+
 #ARDUINO SERIAL INIT.
 #######################################################################
 #Try changing to 115200
@@ -115,10 +120,10 @@ def get_USDATA():
             SR = float(dataList[5])   
 
             ser.flushInput()
-            #print(SR, ER, FR, FL, EL, SL)
+            print(SR, ER, FR, FL, EL, SL)
             #70 130 130 70
             #55 90 90 55
-            if((ER < 80 or FR < 80 or FL < 80 or EL < 80) and mode == "Confirmation" and Avoiding):
+            if((ER < 100 or FR < 100 or FL < 100 or EL < 100) and mode == "Confirmation" and Avoiding):
                 blocked = True
                 #Turn towards left or right based on which reads a further distance
                 if((SR > SL) and not MovingLeft):
@@ -128,7 +133,7 @@ def get_USDATA():
                     MovingLeft = True
                     RobotMotion.left(200)
 
-            elif((ER > 80 and FR > 80 and FL > 80 and EL > 80) and mode == "Confirmation" and Avoiding):
+            elif((ER > 100 and FR > 100 and FL > 100 and EL > 100) and mode == "Confirmation" and Avoiding):
                 MovingRight = False
                 MovingLeft = False
                 blocked = False
@@ -539,6 +544,8 @@ def main():
     #LEVEL 2
 ####################################################################
     elif mode == "Confirmation":
+        global RobotMotion
+        
         #MAIN ROBOT STATES
         global Avoiding
         global FindingFlag
@@ -571,25 +578,28 @@ def main():
         liftClaw()
         print("I am in Confirmation Mode :)")
 
-        NowTime = time.perf_counter()
-        x1, y1 = get_Position()
+        #NowTime = time.perf_counter()
+        #x1, y1 = get_Position()
+        x1=0
         counter = 0
         while(mode == "Confirmation"):
+            counter +=1
             if(Avoiding and not blocked and mode == "Confirmation"):
-                RobotMotion.forward(300)
-                counter +=1
-                if(counter > 400):
-                    print("ORIENTING")
+                if(counter > 300):
+                    #Buffer before you stop for some reason
+                    time.sleep(1.5)
                     RobotMotion.stop()
-                    time.sleep(5)                   
+                    time.sleep(5)
                     #x2, y2 = get_Position()
                     #UpdateHeading(x1,y1,x2,y2,15,y1) #orient yourself forwards towards corridor
-                    counter = 0
-                if(x1 > 14.5):
+                    counter = 0                    
+                elif(x1 > 14.5):
                     Avoiding = False
                     FindingFlag = True
+                else:
+                    RobotMotion.forward(300)
 
-            if(FindingFlag and mode == "Confirmation"):
+            elif(FindingFlag and mode == "Confirmation"):
                 
                 #Go to center of hallway
                 while(not hallwayCenterGoing and mode == "Confirmation"):
@@ -666,7 +676,7 @@ def main():
                         GettingFlag = True
                         
             
-            if(GettingFlag and mode == "Confirmation"):
+            elif(GettingFlag and mode == "Confirmation"):
 
                 while(not hallwayCenterComing and mode == "Confirmation"):
                     x1, y1 = get_Position()
