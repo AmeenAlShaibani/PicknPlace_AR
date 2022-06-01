@@ -573,11 +573,11 @@ def main():
 
         NowTime = time.perf_counter()
         x1, y1 = get_Position()
-
+        counter = 0
         while(mode == "Confirmation"):
             if(Avoiding and not blocked and mode == "Confirmation"):
                 RobotMotion.forward(300)
-                if(xSecsPassed(NowTime, 10)):
+                if(counter > 100):
                     print("ORIENTING")
                     RobotMotion.stop()
                     time.sleep(5)                   
