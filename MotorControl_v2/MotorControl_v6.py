@@ -727,7 +727,9 @@ if __name__ == "__main__":
 
     #Make sure marvelmind is connected after connecting the motor controller
     #since we use ACM1 and not ACM0
-    hedge = MarvelmindHedge(tty = "/dev/ttyACM1_MarvelMind", adr=None, debug=False) # create MarvelmindHedge thread
+    #Changes maxvaluesCount which is buffer size to 1
+    #changed marvelmind address to 18
+    hedge = MarvelmindHedge(adr = 18, tty = "/dev/ttyACM1_MarvelMind", maxvaluescount=1, adr=None, debug=False) # create MarvelmindHedge thread
 
     if (len(sys.argv)>1):
         hedge.tty= sys.argv[1]
