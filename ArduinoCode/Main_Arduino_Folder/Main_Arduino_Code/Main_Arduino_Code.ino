@@ -86,7 +86,6 @@ void loop() {
     //only send data if there is something close to robot 
     //TODO: Make the side US distance be less than the front 2. 
     Serial.print(USDATA);
-    Serial.print('\n');
     
   } else {
     StatusIndicator(data);
@@ -156,6 +155,7 @@ String get_USdata() {
   USDATA += EL_distance;
   USDATA += "," ;
   USDATA += SL_distance;
+  USDATA += "\n";
   return USDATA;
 }
 

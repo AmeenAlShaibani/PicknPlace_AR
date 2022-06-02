@@ -66,11 +66,11 @@ class RobotMotion:
     
         if(direction >= 0):
         #Turn clockwise
-            self.CW()
+            self.CCW()
             
         else:
             #turn CCW
-            self.CCW()
+            self.CW()
 
         time.sleep(turningTime)
         self.stop()
