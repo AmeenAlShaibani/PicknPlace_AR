@@ -12,11 +12,15 @@ import numpy as np
 from threading import Thread, Event
 from RobotMotion_VELOCITY import RobotMotion
 
+#Issues seen and possible fixes
+##################################################################################
+#There is a possibility that when battery is low, communication becomes slower
+# , so you cant execute multiple movement commands one after the other
 
-#There is a possibility that when battery is low, communication becomes slower, so you cant execute
-#multiple movement commands one after the other
+#if you are sending the same command but not the same thing happening, buffer for a long time
+#probabbly a threading issue
 
-
+#When sensor is not reading, disconnext sensor, reconnect, disconnect arduino and reconnect
 
 #ARDUINO SERIAL INIT.
 #######################################################################
@@ -42,8 +46,8 @@ mode = "RC"
 
 #Robot States
 ######################
-Avoiding = True #We start in avoiding mode, and turn off after avoiding obstacles
-FindingFlag = False
+Avoiding = False #We start in avoiding mode, and turn off after avoiding obstacles
+FindingFlag = True
 GettingFlag = False
 blocked = False
 ######################
@@ -51,7 +55,7 @@ blocked = False
 #Sub States
 ############################################
 hallwayCenterGoing = True
-flagZone = False
+flagZone = True
 centered_w_Flag = False
 captured = False
 hallwayCenterComing = False
