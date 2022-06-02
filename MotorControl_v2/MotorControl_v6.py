@@ -124,7 +124,7 @@ def get_USDATA():
             SR = float(dataList[5])   
 
             ser.flushInput()
-            print(SR, ER, FR, FL, EL, SL)
+            #print(SR, ER, FR, FL, EL, SL)
             #70 130 130 70
             #55 90 90 55
             if((ER < 100 or FR < 100 or FL < 100 or EL < 100) and mode == "Confirmation" and Avoiding):
@@ -180,7 +180,7 @@ def FindHeading(goalX, goalY, timeSleepForward=2):
     #print("OG POS: ", x1, y1)
 
     #Get New position
-    time.sleep(5)
+    time.sleep(1.5)
     x2 = hedge.position()[1]
     y2 = hedge.position()[2]
     hedge.dataEvent.wait(1)
@@ -394,15 +394,18 @@ def centerWithFlag(Fx):
             #print("err: ",err)
             if(err < 100):
                 kP = 0.8
-            #if(err < 60):
-            #    kP = 1
+            elif(err < 60):
+                kP = 1
             #print("kP: ", kP)
             Rspeed = kP*err
+            print("AcutalSpeed :", Rspeed)
             if Rspeed > 80:#150
                 Rspeed = 80
+            elif Rspeed < 55 and Rspeed > 30:
+                Rspeed = 55
                 
                 
-            #print("Speed: ", Rspeed)
+            print("Speed: ", Rspeed)
             #TODO: sleeping for 0.625 second rotates around 25 degrees this needs to be tuned
             if(Fx > screen_center_x):
                 #crab right or turn CW
@@ -654,8 +657,11 @@ def main():
                 curTime = time.perf_counter()
                 while (not captured and mode == "Confirmation"):
                     if(time.perf_counter()-curTime < 4):
+                        time.sleep(1.5)
                         RobotMotion.forward(150)
                     else:
+                        time.sleep(1.5)
+                        RobotMotion.stop()
                         #If robot moves for 2 seconds and has not captured then reorient
                         flagZone_interrupt = True 
                         centered_w_Flag = False
@@ -670,6 +676,7 @@ def main():
                         curTime = time.perf_counter()
                     print(FL,FR)  
                     if((FL <= 15 or FR <= 15) and mode == "Confirmation"): #TODO Tune this number
+                        time.sleep(1.5)
                         RobotMotion.stop()
                         captured = True
                         closeGrabbingClaw()
@@ -743,7 +750,8 @@ if __name__ == "__main__":
     #since we use ACM1 and not ACM0
     #Changes maxvaluesCount which is buffer size to 1
     #changed marvelmind address to 18
-    hedge = MarvelmindHedge(adr = 18, tty = "/dev/ttyACM1_MarvelMind", maxvaluescount=1, adr=None, debug=False) # create MarvelmindHedge thread
+    #maxvaluescount=1
+    hedge = MarvelmindHedge(tty = "/dev/ttyACM1_MarvelMind", adr= 18, maxvaluescount=1, debug=False) # create MarvelmindHedge thread
 
     if (len(sys.argv)>1):
         hedge.tty= sys.argv[1]
