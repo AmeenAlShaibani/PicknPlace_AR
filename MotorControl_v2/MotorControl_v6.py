@@ -48,16 +48,16 @@ mode = "RC"
 
 #Robot States
 ######################
-Avoiding = False #We start in avoiding mode, and turn off after avoiding obstacles
-FindingFlag = True
+Avoiding = True #We start in avoiding mode, and turn off after avoiding obstacles
+FindingFlag = False
 GettingFlag = False
 blocked = False
 ######################
 
 #Sub States
 ############################################
-hallwayCenterGoing = True
-flagZone = True
+hallwayCenterGoing = False
+flagZone = False
 centered_w_Flag = False
 captured = False
 hallwayCenterComing = False
@@ -138,12 +138,12 @@ def get_USDATA():
             SR = float(dataList[5])   
 
             ser.flushInput()
-            #print(SR, ER, FR, FL, EL, SL)
+            print(SR, ER, FR, FL, EL, SL)
             #70 130 130 70
             #55 90 90 55
 
             #THIS EXECUTES AT TIMES WHEN IT SHOULDNT BE DOING SO
-            if((ER < 100 or FR < 100 or FL < 100 or EL < 100) and (mode == "Confirmation") and Avoiding):
+            if((ER < 120 or FR < 120 or FL < 120 or EL < 120) and (mode == "Confirmation") and Avoiding):
                 blocked = True
                 #Turn towards left or right based on which reads a further distance
                 if((SR > SL) and not MovingLeft):
@@ -153,7 +153,7 @@ def get_USDATA():
                     MovingLeft = True
                     RobotMotion.left(200)
 
-            elif((ER > 100 and FR > 100 and FL > 100 and EL > 100) and (mode == "Confirmation")  and Avoiding):
+            elif((ER > 120 and FR > 120 and FL > 120 and EL > 120) and (mode == "Confirmation")  and Avoiding):
                 MovingRight = False
                 MovingLeft = False
                 blocked = False
@@ -236,7 +236,7 @@ def FindHeading(goalX, goalY, timeSleepForward=2):
     time.sleep(1.5)
 
     #Rotate as needed 
-    RobotMotion.rotateDegrees(angTurn, direc)
+    RobotMotion.rotateDegrees(angTurn, -direc)
 
     return x2, y2
 
@@ -261,7 +261,7 @@ def UpdateHeading(x1, y1, x2, y2, goalX, goalY):
     
     FullRotationTime = 9
     turningTime = angTurn * FullRotationTime/360
-    PPR = angTurn * 1425.1/360 # this is the PPR value that we need to add/sub to each motor
+    #PPR = angTurn * 1425.1/360 # this is the PPR value that we need to add/sub to each motor
     
     #print("I need to turn: ", angTurn, " degrees to get to target")
     #print("I need to turn clockwise for: ", turningTime, "s to align myself with goal")
@@ -275,12 +275,12 @@ def UpdateHeading(x1, y1, x2, y2, goalX, goalY):
     if(direc >= 0):
      #Turn clockwise
        # print("turning CW")
-        RobotMotion.CW()
+        RobotMotion.CCW()
         
     else:
         #turn CCW
         #print("CCW")
-        RobotMotion.CCW()
+        RobotMotion.CW()
 
     time.sleep(turningTime)
     RobotMotion.stop()
@@ -622,20 +622,12 @@ def main():
         counter = 0
         while(mode == "Confirmation"):
             counter +=1
+            x1, y1 = get_Position()
             if(Avoiding and not blocked and mode == "Confirmation"):
                 if(x1 > 14.5):
                     Avoiding = False
                     FindingFlag = True
-                    US_interrupt = True # kill the ultrasonic thread after avoiding stuff
-
-                elif(counter > 300):
-                    #Buffer before you stop for some reason
-                    time.sleep(1.5)
-                    RobotMotion.stop()
-                    time.sleep(1.5)
-                    x2, y2 = get_Position()
-                    UpdateHeading(x1,y1,x2,y2, goalX = 15, goalY = y2) #orient yourself forwards towards corridor
-                    counter = 0                    
+                    US_interrupt = True # kill the ultrasonic thread after avoiding stuff                    
                 else:
                     RobotMotion.forward(300)
 
@@ -644,35 +636,40 @@ def main():
 
                 print("Going to center of hallway")
                 RobotMotion.stop()
-                time.sleep(1.5)
-                x2, y2 = get_Position()
-                UpdateHeading(x1,y1,x2,y2,15.65, 0.82)
-                centerCounter = 0 
-                #Go to center of hallway
-                while(not hallwayCenterGoing and mode == "Confirmation"):
-                    centerCounter += 1
-                    x1, y1 = get_Position()
-                    if(x1 > 13.53 and y1 < 1.4 and mode == "Confirmation"):
+                x1, y1 = get_Position()
+                if(x1 > 13.53 and y1 < 1.4 and mode == "Confirmation"):
                         hallwayCenterGoing = True
-                    elif(centerCounter > 300):
-                        time.sleep(1.5)
-                        RobotMotion.stop()
-                        time.sleep(2)
-                        x2,y2 = get_Position()
-                        UpdateHeading(x1,y1,x2,y2,15.65, 0.82)
-                    else:
-                        RobotMotion.forward(300)
+                else:
+                    time.sleep(1.5)
+                    x2, y2 = get_Position()
+                    UpdateHeading(x1,y1,x2,y2,15.65, 0.82)
+                    centerCounter = 0 
+                    #Go to center of hallway
+                    while(not hallwayCenterGoing and mode == "Confirmation"):
+                        centerCounter += 1
+                        x1, y1 = get_Position()
+                        if(x1 > 13.53 and y1 < 1.4 and mode == "Confirmation"):
+                            hallwayCenterGoing = True
+                        elif(centerCounter > 500):
+                            print("Updating Heading")
+                            time.sleep(1.5)
+                            RobotMotion.stop()
+                            time.sleep(2)
+                            x2,y2 = get_Position()
+                            UpdateHeading(x1,y1,x2,y2,15.65, 0.82)
+                        else:
+                            RobotMotion.forward(300)
                 
                 print("Going to Flag Zone")
                 #go to the Flag zone
                 while(not flagZone and mode == "Confirmation"):
                     x1, y1 = get_Position()
-                    if(x1 > 16.6 and mode == "Confirmation"):
+                    if(x1 > 17.6 and mode == "Confirmation"):
                         flagZone = True
                     elif(mode == "Confirmation"):
-                        FindHeading(16.6,0.936)
+                        FindHeading(18.4,1.1)
                         RobotMotion.forward(200)
-                        time.sleep(3) #TODO: Tune this number
+                        time.sleep(4) #TODO: Tune this number
                         RobotMotion.stop()
                         time.sleep(1.5) #TODO Tune htis number
                 
@@ -806,8 +803,8 @@ if __name__ == "__main__":
     if (len(sys.argv)>1):
         hedge.tty= sys.argv[1]
     
-    hedge.start() # start thread
+    hedge.start() # start thread                                                           
 
     while True:
         main()
-        
+            
