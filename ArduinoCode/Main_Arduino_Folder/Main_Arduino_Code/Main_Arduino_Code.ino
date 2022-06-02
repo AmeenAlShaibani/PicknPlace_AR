@@ -186,7 +186,7 @@ void ServoControl(String data) {
     //Serial.println("Open Grabbing Servo Arm");
   }
   else if (data == "Close Servo_grab"){
-    DSSERVO25KG_grab.write(140);
+    DSSERVO25KG_grab.write(125);
     //Serial.println("CLOSE Grabbing Servo Arm");
   }
   else if(data == "Open Servo_lift") {
