@@ -1,7 +1,5 @@
 #! /usr/bin/python
-from sre_constants import GROUPREF_EXISTS
 import sys
-from webbrowser import get
 from open_motor_serial import open_motor
 import serial
 import KeyPressModule as kp
@@ -91,8 +89,17 @@ global NowTime
 #global current Position variables
 global x1, y1
 
+def start_USThread():
+    #Create US thread with the get_USDATA function
+    US_thread = Thread(target=get_USDATA, args=(), daemon=True)
+    #Start US thread
+    US_thread.start()
+
 #Starts the Ultrasonic and ModeSwitch threads:
 def startThreads():
+    #First empty out the arduino serial buffer
+    ser.flushInput()
+
     #Create US thread with the get_USDATA function
     US_thread = Thread(target=get_USDATA, args=(), daemon=True)
     #Start US thread
@@ -380,15 +387,19 @@ def getFlagCenter(imageFrame):
     if len(contours) != 0:
         # find the biggest countour (c) by the area
         c = max(contours, key = cv2.contourArea)
-        if (cv2.contourArea(c) > 500):
+        if (cv2.contourArea(c) > 1000):
             #Find the center of the box
             #TODO: YOU CAN REMOVE MOMENTS IF AVG IF EXT TOP AND BOT is GOOD
-            extTop = tuple(c[c[:, :, 1].argmin()][0])        
-            extBot = tuple(c[c[:, :, 1].argmax()][0])        
+            
+            #extTop = tuple(c[c[:, :, 1].argmin()][0])        
+            #extBot = tuple(c[c[:, :, 1].argmax()][0])        
 
-            avgX = (extTop[0]+extBot[0])/2
+            #avgX = (extTop[0]+extBot[0])/2
 
-            return avgX
+            M = cv2.moments(c)
+            cx = int(M["m10"]/M["m00"])
+
+            return cx
 
 def centerWithFlag(Fx):
     global withinTol
@@ -419,7 +430,7 @@ def centerWithFlag(Fx):
             print("AcutalSpeed :", Rspeed)
             if Rspeed > 80:#150
                 Rspeed = 80
-            elif Rspeed < 55 and Rspeed > 30:
+            elif Rspeed < 55 and Rspeed > 20:
                 Rspeed = 55
                 
                 
@@ -448,6 +459,13 @@ def reset_interrupts():
 
     US_interrupt = False
     Mode_interrupt = False
+    
+def set_interrupts():
+    global US_interrupt
+    global Mode_interrupt
+
+    US_interrupt = True
+    Mode_interrupt = True
 
 def resetSubStates():
     global hallwayCenterGoing
@@ -604,7 +622,8 @@ def main():
         global NowTime
 
         #global current Position variables
-        global x1, y1
+        global x1
+        global y1
 
 
         ser.write(b"Confirmation Mode\n")
@@ -628,6 +647,12 @@ def main():
                     Avoiding = False
                     FindingFlag = True
                     US_interrupt = True # kill the ultrasonic thread after avoiding stuff                    
+                elif(counter > 500):
+                    time.sleep(1.5)
+                    RobotMotion.stop()
+                    time.sleep(1.5)
+                    x2, y2 = get_Position()
+                    UpdateHeading(x1,y1,x2,y2,15, y2)
                 else:
                     RobotMotion.forward(300)
 
@@ -635,30 +660,32 @@ def main():
 
 
                 print("Going to center of hallway")
+                time.sleep(0.5)
                 RobotMotion.stop()
                 x1, y1 = get_Position()
-                if(x1 > 13.53 and y1 < 1.4 and mode == "Confirmation"):
-                        hallwayCenterGoing = True
-                else:
-                    time.sleep(1.5)
-                    x2, y2 = get_Position()
-                    UpdateHeading(x1,y1,x2,y2,15.65, 0.82)
-                    centerCounter = 0 
-                    #Go to center of hallway
-                    while(not hallwayCenterGoing and mode == "Confirmation"):
-                        centerCounter += 1
-                        x1, y1 = get_Position()
-                        if(x1 > 13.53 and y1 < 1.4 and mode == "Confirmation"):
+                if(not hallwayCenterGoing):
+                    if(x1 > 13.53 and y1 < 1.4 and mode == "Confirmation"):
                             hallwayCenterGoing = True
-                        elif(centerCounter > 500):
-                            print("Updating Heading")
-                            time.sleep(1.5)
-                            RobotMotion.stop()
-                            time.sleep(2)
-                            x2,y2 = get_Position()
-                            UpdateHeading(x1,y1,x2,y2,15.65, 0.82)
-                        else:
-                            RobotMotion.forward(300)
+                    else:
+                        time.sleep(1.5)
+                        x2, y2 = get_Position()
+                        UpdateHeading(x1,y1,x2,y2,15.65, 0.82)
+                        centerCounter = 0 
+                        #Go to center of hallway
+                        while(not hallwayCenterGoing and mode == "Confirmation"):
+                            centerCounter += 1
+                            x1, y1 = get_Position()
+                            if(x1 > 13.53 and y1 < 1.4 and mode == "Confirmation"):
+                                hallwayCenterGoing = True
+                            elif(centerCounter > 500):
+                                print("Updating Heading")
+                                time.sleep(1.5)
+                                RobotMotion.stop()
+                                time.sleep(2)
+                                x2,y2 = get_Position()
+                                UpdateHeading(x1,y1,x2,y2,15.65, 0.82)
+                            else:
+                                RobotMotion.forward(300)
                 
                 print("Going to Flag Zone")
                 #go to the Flag zone
@@ -673,13 +700,39 @@ def main():
                         RobotMotion.stop()
                         time.sleep(1.5) #TODO Tune htis number
                 
+                
+                #REMOVE THE CAPTURED CODE IF YOU GIVE UP
+                print("Flag capture comfirmation")
+                #go to the Flag zone
+                while(not captured and mode == "Confirmation"):
+                    x1, y1 = get_Position()
+                    if(WithinTolerance(0.5, x1,y1, 18.4, 0.3) and mode == "Confirmation"):
+                        RobotMotion.stop()
+                            captured = True
+                            US_interrupt = True
+                            #capture flag and set next state
+                            closeGrabbingClaw()
+                            time.sleep(1)
+                            liftClaw()
+                            time.sleep(1)
+                            FindingFlag = False
+                            GettingFlag = True
+                    elif(mode == "Confirmation"):
+                        FindHeading(18.4,0.3)
+                        RobotMotion.forward(200)
+                        time.sleep(3) #TODO: Tune this number
+                        RobotMotion.stop()
+                        time.sleep(2)
+                        #TODO Tune htis number
+                
+                
                 #Stop the threads so that the processor can identify the flag
                 stopThreads()
 
                 #Ready the claw
-                lowerClaw()
-                time.sleep(0.8)
                 openGrabbingClaw()
+                time.sleep(0.8)
+                lowerClaw()
                 time.sleep(0.8)
                 
                 print("Centering with flag")
@@ -697,15 +750,32 @@ def main():
                 #Capture the flag once identified
                 curTime = time.perf_counter()
                 FlagDetectorCounter = 0
+                Orienting = False
                 while (not captured and mode == "Confirmation"):
-                    if(time.perf_counter()-curTime < 4):
-                        time.sleep(1.5)
-                        RobotMotion.forward(200)
-                    else:
-                        time.sleep(1.5)
+                    if((FL <= 15 or FR <= 15) and mode == "Confirmation"): #TODO Tune this number
+                        FlagDetectorCounter += 1
+                        RobotMotion.stop()
+                        if(FlagDetectorCounter == 4):
+                            #Stop and stop US thread
+                            time.sleep(1.5)
+                            RobotMotion.stop()
+                            captured = True
+                            US_interrupt = True
+                            #capture flag and set next state
+                            closeGrabbingClaw()
+                            time.sleep(1)
+                            liftClaw()
+                            time.sleep(1)
+                            FindingFlag = False
+                            GettingFlag = True
+                            
+                    elif((time.perf_counter() - curTime) > 6):
+                        print("REORIENTING")
+                        Orienting = True
+                        time.sleep(0.5)
                         RobotMotion.stop()
                         #If robot moves for 2 seconds and has not captured then reorient
-                        reset_interrupts()
+                        set_interrupts()
                         centered_w_Flag = False
                         while (not centered_w_Flag and mode == "Confirmation"):
                             imageFrame = captureImage(camera) #capture image
@@ -717,56 +787,60 @@ def main():
                                 startThreads()
 
                         curTime = time.perf_counter()
+                        Orienting = False
+                    elif(mode == "Confirmation" and not Orienting):
+                        print("MOBING")
+                        time.sleep(1.5)
+                        RobotMotion.forward(200)
                     #print(FL,FR)  
-                    if((FL <= 15 or FR <= 15) and mode == "Confirmation"): #TODO Tune this number
-                        FlagDetectorCounter += 1
-                        if(FlagDetectorCounter == 10):
-                            time.sleep(1.5)
-                            RobotMotion.stop()
-                            captured = True
-                            closeGrabbingClaw()
-                            time.sleep(1)
-                            liftClaw()
-                            time.sleep(1)
-                            FindingFlag = False
-                            GettingFlag = True         
+                             
             
             elif(GettingFlag and mode == "Confirmation"):
                 
                 print("Going to HallWay center")
+                RobotMotion.stop()
+                time.sleep(2)
+                x1, y1 = get_Position()
+                x1, y1 = FindHeading(15.65, 0.82)
                 while((not hallwayCenterComing) and mode == "Confirmation"):
-                    RobotMotion.stop()
-                    time.sleep(2)
-                    x1, y1 = get_Position()
                     if(x1 > 14.53 and y1 < 1 and mode == "Confirmation"):
                         hallwayCenterGoing = True
                     elif(mode == "Confirmation"):
-                        FindHeading(15.65, 0.82)
+                        time.sleep(1.5)
                         RobotMotion.forward(300)
                         time.sleep(4) #TODO: Tune this number
-
+                        RobotMotion.stop()
+                        x2, y2 = get_Position()
+                        UpdateHeading(x1, y1, x2, y2, 15.65, 0.82)
+                        
+                        
                 print("Going to the goal Zone")
                 #To to goal Zone:
                 while(not Delivered and mode == "Confirmation"):
                     x1, y1 = get_Position()
                     if(WithinTolerance(0.5,x1,y1,15.43,6.8) and mode == "Confirmation"):
+                        #Drop the Flag
                         RobotMotion.stop()
                         lowerClaw()
                         time.sleep(2)
                         openGrabbingClaw()
+                        time.sleep(1)
                         Delivered = True
                         FlagsDelivered += 1
+                        
+                        #if both flags are delivered then end
                         if(FlagsDelivered == 2 and mode == "Confirmation"):
                             mode = "RC"
+                        #if only 1 flag then get the other flag
                         elif(mode == "Confirmation"):
                             RobotMotion.backward()
                             time.sleep(1)
                             RobotMotion.stop()
                             #If you havent found both flags, return to finding flag state
-                            resetSubStates()
                             GettingFlag = False
                             FindingFlag = True
                             resetSubStates()
+                            
                     elif(mode == "Confirmation"):
                         FindHeading(15.43,6.83)
                         RobotMotion.forward(200)
@@ -804,7 +878,9 @@ if __name__ == "__main__":
         hedge.tty= sys.argv[1]
     
     hedge.start() # start thread                                                           
-
+    time.sleep(1)
+    liftClaw()
+     
     while True:
         main()
-            
+    

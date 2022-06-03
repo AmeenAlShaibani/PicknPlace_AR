@@ -1,4 +1,4 @@
-#include <Servo.h>
+                                                                     #include <Servo.h>
 #include "NewPing.h"
 
 /////////////////////define constants for the Ultrasonics////////////////////////////
@@ -194,7 +194,7 @@ void ServoControl(String data) {
     //Serial.println("Open Liftting Servo Arm");
   }
   else if (data == "Close Servo_lift"){
-    DSSERVO25KG_lift.write(100);
+    DSSERVO25KG_lift.write(95);
     //Serial.println("CLOSE Liftting Servo Arm");
   }
  

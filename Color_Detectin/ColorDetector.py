@@ -78,7 +78,8 @@ while(1):
     if len(contours) != 0:
         # find the biggest countour (c) by the area
         c = max(contours, key = cv2.contourArea)
-        if(cv2.contourArea(c) > 500):
+        if(cv2.contourArea(c) > 1000):
+            print(cv2.contourArea(c))
             epsilon = 0.01 * cv2.arcLength(c, True)
             approximations = cv2.approxPolyDP(c, epsilon, True)
             #cv2.drawContours(imageFrame, [approximations], 0, (255,255,0), 3)

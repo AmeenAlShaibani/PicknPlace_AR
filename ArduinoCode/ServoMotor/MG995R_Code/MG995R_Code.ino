@@ -15,13 +15,13 @@ void setup() {
 
 void loop() {
   Serial.println("180");// You can display on the serial the signal value
-  MG995_Servo.write(180); //Turn clockwise at high speed
+  MG995_Servo.write(0); //Turn clockwise at high speed
   delay(3000);
   MG995_Servo.detach();//Stop. You can use deatch function or use write(x), as x is the middle of 0-180 which is 90, but some lack of precision may change this value
   delay(2000);
   MG995_Servo.attach(Servo_PWM);//Always use attach function after detach to re-connect your servo with the board
   Serial.println("360");//Turn left high speed
-  MG995_Servo.write(300); //it was 120 
+  MG995_Servo.write(90); //it was 120 
   delay(3000);
   MG995_Servo.detach();//Stop
   delay(2000);
