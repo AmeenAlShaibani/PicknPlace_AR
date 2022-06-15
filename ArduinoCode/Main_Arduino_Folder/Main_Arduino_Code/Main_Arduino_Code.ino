@@ -1,4 +1,4 @@
-                                                                     #include <Servo.h>
+#include <Servo.h>
 #include "NewPing.h"
 
 /////////////////////define constants for the Ultrasonics////////////////////////////
@@ -85,7 +85,8 @@ void loop() {
     String USDATA = get_USdata();
     //only send data if there is something close to robot 
     //TODO: Make the side US distance be less than the front 2. 
-    Serial.print(USDATA);
+    Serial.print(USDATA,);
+    Serial.print('\n');
     
   } else {
     StatusIndicator(data);
@@ -155,7 +156,6 @@ String get_USdata() {
   USDATA += EL_distance;
   USDATA += "," ;
   USDATA += SL_distance;
-  USDATA += "\n";
   return USDATA;
 }
 
@@ -194,7 +194,7 @@ void ServoControl(String data) {
     //Serial.println("Open Liftting Servo Arm");
   }
   else if (data == "Close Servo_lift"){
-    DSSERVO25KG_lift.write(95);
+    DSSERVO25KG_lift.write(100);
     //Serial.println("CLOSE Liftting Servo Arm");
   }
  
