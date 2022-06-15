@@ -150,7 +150,7 @@ def get_USDATA():
             #55 90 90 55
 
             #THIS EXECUTES AT TIMES WHEN IT SHOULDNT BE DOING SO
-            if((ER < 120 or FR < 120 or FL < 120 or EL < 120) and (mode == "Confirmation") and Avoiding):
+            if((ER < 140 or FR < 140 or FL < 140 or EL < 140) and (mode == "Confirmation") and Avoiding):
                 blocked = True
                 #Turn towards left or right based on which reads a further distance
                 if((SR > SL) and not MovingLeft):
@@ -160,7 +160,7 @@ def get_USDATA():
                     MovingLeft = True
                     RobotMotion.left(200)
 
-            elif((ER > 120 and FR > 120 and FL > 120 and EL > 120) and (mode == "Confirmation")  and Avoiding):
+            elif((ER > 140 and FR > 140 and FL > 140 and EL > 140) and (mode == "Confirmation")  and Avoiding):
                 MovingRight = False
                 MovingLeft = False
                 blocked = False
